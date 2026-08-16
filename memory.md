@@ -2,14 +2,14 @@
 
 Living status file. The agent (and you) should update this **at the end of every session/task** — that's how a fresh Antigravity session picks up context cheaply instead of re-reading the whole codebase.
 
-Last updated: 2026-08-16 (Phase 0 completed)
+Last updated: 2026-08-16 (Phase 1 completed)
 
 ## Current Phase
-`Phase 1 — Backend: Menu & Settings API` (ready to start)
+`Phase 2 — Frontend Skeleton & Layout` (ready to start)
 
 ## Completed
 - [x] Phase 0 — Project Setup (incl. Capacitor Android shell)
-- [ ] Phase 1 — Backend: Menu & Settings API
+- [x] Phase 1 — Backend: Menu & Settings API
 - [ ] Phase 2 — Frontend Skeleton & Layout
 - [ ] Phase 3 — Static Content Sections
 - [ ] Phase 4 — 3D & Animation Layer
@@ -18,9 +18,10 @@ Last updated: 2026-08-16 (Phase 0 completed)
 - [ ] Phase 6.5 — Deploy Web Version (later, not blocking)
 
 ## File Currently Being Worked On
-Completed Phase 0 setup. Next: `HasnainFoodPoint.Api/Models/` & `Data/` (Phase 1).
+Completed Phase 1 backend. Next: `hasnain-food-point-web/src/` (Phase 2 — Frontend Skeleton, Layout & API hooks).
 
 ## Decisions Log
+- `2026-08-16` — Implemented EF Core models (`Category`, `MenuItem`, `BusinessInfo`), `AppDbContext`, migration `InitialCreate`, seed logic `SeedData.cs`, DTOs, and controllers (`MenuController`, `SettingsController`). Seeded initial menu and business information in SQL Server LocalDB.
 - `2026-08-16` — Scaffolded HasnainFoodPoint.Api (.NET 8 Web API, EF Core 8.0.11 SQL Server) and hasnain-food-point-web (React + Vite + Tailwind CSS + Capacitor 7 + Android platform) exactly matching architecture.md.
 - `2026-08-16` — Chose Spline over hand-built Three.js models for the hero (see architecture.md §2).
 
