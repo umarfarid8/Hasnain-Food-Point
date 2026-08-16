@@ -1,0 +1,15 @@
+:root {
+  /* Warm Ember Theme Tokens */
+  --bg-primary: #141110;
+  --bg-surface: #1F1B19;
+  --accent-primary: #FF5A1F;
+  --accent-secondary: #F4B93E;
+  --text-primary: #FAF6F2;
+  --text-secondary: #C9C0BA;
+  --success-whatsapp: #25D366;
+  --border-subtle: #2E2925;
+
+  /* Typography */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', 'Poppins', sans-serif;
+}
