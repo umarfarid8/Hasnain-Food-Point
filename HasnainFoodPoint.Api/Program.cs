@@ -11,15 +11,14 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "https://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:4173",
-                "capacitor://localhost",
-                "http://localhost")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.SetIsOriginAllowed(origin =>
+            {
+                if (string.IsNullOrEmpty(origin)) return false;
+                var uri = new Uri(origin);
+                return uri.Host == "localhost" || uri.Host == "127.0.0.1" || origin.StartsWith("capacitor://");
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 

@@ -8,15 +8,22 @@ import LocationCard from './features/location/LocationCard';
 
 function App() {
   return (
-    <div className="min-h-screen bg-bg-primary text-text-primary flex flex-col font-body">
+    <div className="min-h-screen bg-bg-primary text-text-primary flex flex-col font-body selection:bg-accent-primary selection:text-white">
+      {/* Sticky Header Navbar */}
       <Navbar />
-      <main className="flex-1 w-full max-w-md mx-auto px-4 py-4 sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
+
+      {/* Main Single Page Content */}
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-4 space-y-8">
         <HeroScene />
         <MenuGrid />
         <OwnerStory />
         <LocationCard />
       </main>
+
+      {/* Floating Action CTA */}
       <WhatsAppFloatButton />
+
+      {/* Footer */}
       <Footer />
     </div>
   );
