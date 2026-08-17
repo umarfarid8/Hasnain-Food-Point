@@ -11,5 +11,6 @@
 
   /* Typography */
   --font-heading: 'Poppins', sans-serif;
-  --font-body: 'Inter', 'Poppins', sans-serif;
+  --font-body: 'Inter', 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-urdu: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
 }

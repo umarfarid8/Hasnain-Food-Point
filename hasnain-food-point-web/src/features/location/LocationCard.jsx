@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from 'framer-motion';
 import { MapPin, Clock, Navigation, MessageCircle, Sparkles } from 'lucide-react';
 import SectionHeading from '../../components/ui/SectionHeading';
 import Button from '../../components/ui/Button';
@@ -7,6 +8,7 @@ import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
 export default function LocationCard() {
   const { settings } = useSettings();
   const { buildWhatsAppLink, displayNumber } = useWhatsAppLink();
+  const shouldReduceMotion = useReducedMotion();
   const waLink = buildWhatsAppLink(
     'Hi! I would like to ask about directions or pickup at Hasnain Food Point.'
   );
@@ -19,52 +21,65 @@ export default function LocationCard() {
     `https://maps.google.com/?q=${encodeURIComponent(address)}`;
 
   return (
-    <section id="location" className="w-full py-6 sm:py-10 scroll-mt-20">
+    <motion.section
+      id="location"
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="w-full py-6 sm:py-10 scroll-mt-20"
+    >
       <SectionHeading
-        badge="Visit Us"
+        badge="Visit Us • رابطہ اور پتہ"
         icon={MapPin}
         title="Location & Timings"
-        subtitle="Stop by our food point in Sahiwal for hot takeout or order ahead on WhatsApp"
+        subtitle="Hot takeout in Sahiwal or order ahead on WhatsApp"
       />
 
       <div className="bg-gradient-to-b from-bg-surface to-bg-surface/90 border border-border-subtle rounded-3xl p-5 sm:p-8 md:p-10 shadow-xl space-y-6 sm:space-y-8">
         {/* Info Grid (Address & Hours) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Address Box */}
-          <div className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-bg-primary/80 border border-border-subtle hover:border-accent-primary/40 transition-colors">
+          <motion.div
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
+            className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-bg-primary/80 border border-border-subtle hover:border-accent-primary/40 transition-colors"
+          >
             <div className="w-12 h-12 rounded-xl bg-accent-primary/15 border border-accent-primary/30 flex items-center justify-center flex-shrink-0 text-accent-primary shadow-sm">
               <MapPin className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-heading font-semibold uppercase tracking-wider text-text-secondary">
-                Our Location
+              <span className="text-xs font-heading font-semibold uppercase tracking-wider text-accent-secondary">
+                Our Location • پتہ
               </span>
               <p className="font-heading font-bold text-base sm:text-lg text-text-primary mt-0.5">
                 {address}
               </p>
-              <p className="text-xs text-text-secondary mt-1">
-                Sahiwal, Punjab, Pakistan
+              <p className="text-xs text-text-secondary mt-0.5">
+                Sahiwal, Punjab • ساہیوال، پنجاب
               </p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Opening Hours Box */}
-          <div className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-bg-primary/80 border border-border-subtle hover:border-accent-secondary/40 transition-colors">
+          <motion.div
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
+            className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl bg-bg-primary/80 border border-border-subtle hover:border-accent-secondary/40 transition-colors"
+          >
             <div className="w-12 h-12 rounded-xl bg-accent-secondary/15 border border-accent-secondary/30 flex items-center justify-center flex-shrink-0 text-accent-secondary shadow-sm">
               <Clock className="w-6 h-6" />
             </div>
             <div>
-              <span className="text-xs font-heading font-semibold uppercase tracking-wider text-text-secondary">
-                Opening Hours
+              <span className="text-xs font-heading font-semibold uppercase tracking-wider text-accent-secondary">
+                Opening Hours • اوقات
               </span>
               <p className="font-heading font-bold text-base sm:text-lg text-text-primary mt-0.5">
                 {openingHours}
               </p>
-              <p className="text-xs text-text-secondary mt-1">
-                Open 7 Days a Week
+              <p className="text-xs text-text-secondary mt-0.5">
+                Open 7 Days a Week • روزانہ
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Visual Map Representation Card */}
@@ -85,12 +100,12 @@ export default function LocationCard() {
             </h4>
 
             <p className="text-xs sm:text-sm text-text-secondary leading-relaxed">
-              Find us at <span className="text-accent-secondary font-medium">{address}</span>. Tap below to navigate directly using Google Maps.
+              Find us at <span className="text-accent-secondary font-semibold">{address}</span>. Tap below for directions on Google Maps.
             </p>
 
             <div className="pt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-bg-surface border border-border-subtle text-xs text-text-secondary">
               <Sparkles className="w-3.5 h-3.5 text-accent-secondary" />
-              <span>Easy Pickup & Fast Preparation</span>
+              <span>Fast Pickup & Takeout • فوری پیکنگ</span>
             </div>
           </div>
         </div>
@@ -105,9 +120,9 @@ export default function LocationCard() {
             variant="secondary"
             size="lg"
             icon={Navigation}
-            className="w-full sm:w-auto font-semibold"
+            className="w-full sm:w-auto font-semibold min-h-[48px]"
           >
-            Get Directions in Maps
+            Get Directions in Maps • راستہ دیکھیں
           </Button>
 
           <Button
@@ -118,12 +133,12 @@ export default function LocationCard() {
             variant="whatsapp"
             size="lg"
             icon={MessageCircle}
-            className="w-full sm:w-auto font-semibold shadow-lg shadow-whatsapp/20"
+            className="w-full sm:w-auto font-semibold shadow-lg shadow-whatsapp/20 min-h-[48px]"
           >
             Ask on WhatsApp ({displayNumber})
           </Button>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

@@ -27,13 +27,16 @@ export const DEFAULT_MENU = [
   {
     id: 1,
     name: 'Fries',
-    description: 'Crispy, freshly cut golden fries with our signature spice blend',
+    urduName: 'فرائز',
+    icon: '🍟',
+    description: 'Crispy & Fresh • گرما گرم فرائز',
     displayOrder: 1,
     items: [
       {
         id: 101,
-        name: 'Half Plate',
-        description: 'Fresh, hot crispy potato fries with savory seasoning',
+        name: 'Half Plate Fries',
+        urduName: 'ہاف پلیٹ فرائز',
+        description: 'Crispy seasoned potato fries • ہاف پلیٹ',
         price: 50,
         priceDisplay: 'Rs. 50',
         imageUrl: '/assets/images/fries-half.webp',
@@ -41,8 +44,9 @@ export const DEFAULT_MENU = [
       },
       {
         id: 102,
-        name: 'Full Plate',
-        description: 'Generous serving of golden crispy seasoned fries',
+        name: 'Full Plate Fries',
+        urduName: 'فل پلیٹ فرائز',
+        description: 'Generous serving of hot crispy fries • فل پلیٹ',
         price: 100,
         priceDisplay: 'Rs. 100',
         imageUrl: '/assets/images/fries-full.webp',
@@ -53,13 +57,16 @@ export const DEFAULT_MENU = [
   {
     id: 2,
     name: 'Burger',
-    description: 'Hot and savory freshly made street-style burgers',
+    urduName: 'آملیٹ برگر',
+    icon: '🍔',
+    description: 'Fresh & Juicy • تازہ انڈہ برگر',
     displayOrder: 2,
     items: [
       {
         id: 201,
         name: 'Amelet Burger',
-        description: 'Fluffy spiced egg patty in a warm toasted sesame bun',
+        urduName: 'آملیٹ برگر',
+        description: 'Spiced egg patty in toasted bun • سپیشل انڈہ برگر',
         price: 150,
         priceDisplay: 'Rs. 150',
         imageUrl: '/assets/images/amelet-burger.webp',
@@ -70,13 +77,16 @@ export const DEFAULT_MENU = [
   {
     id: 3,
     name: 'Samosa',
-    description: 'Traditional crispy golden samosas packed with spicy potato masala',
+    urduName: 'آلو سموسہ',
+    icon: '🥟',
+    description: 'Crispy Golden • کرسپی سموسہ',
     displayOrder: 3,
     items: [
       {
         id: 301,
         name: 'Aloo Samosa',
-        description: 'Crispy golden triangular pastry stuffed with spicy potato filling',
+        urduName: 'آلو سموسہ',
+        description: 'Crispy pastry with spicy potato filling • گرما گرم سموسہ',
         price: 30,
         priceDisplay: 'Rs. 30',
         imageUrl: '/assets/images/aloo-samosa.webp',
@@ -87,13 +97,16 @@ export const DEFAULT_MENU = [
   {
     id: 4,
     name: 'Roll',
-    description: 'Golden fried crispy rolls with delicious potato filling',
+    urduName: 'آلو رول',
+    icon: '🌯',
+    description: 'Crunchy Snack • ذائقہ دار رول',
     displayOrder: 4,
     items: [
       {
         id: 401,
         name: 'Aloo Roll',
-        description: 'Crispy fried roll stuffed with flavorful spiced potato mix',
+        urduName: 'آلو رول',
+        description: 'Golden fried roll with spiced potatoes • کرسپی آلو رول',
         price: 10,
         priceDisplay: 'Rs. 10',
         imageUrl: '/assets/images/aloo-roll.webp',
@@ -104,13 +117,16 @@ export const DEFAULT_MENU = [
   {
     id: 5,
     name: 'Naan',
-    description: 'Fluffy tandoori naan stuffed with seasoned potato filling',
+    urduName: 'آلو نان',
+    icon: '🫓',
+    description: 'Soft & Stuffed • تندوری آلو نان',
     displayOrder: 5,
     items: [
       {
         id: 501,
         name: 'Aloo Naan',
-        description: 'Soft, warm oven-baked naan stuffed with seasoned potatoes',
+        urduName: 'آلو نان',
+        description: 'Warm tandoori naan with spiced potatoes • تازہ تندوری نان',
         price: 70,
         priceDisplay: 'Rs. 70',
         imageUrl: '/assets/images/aloo-naan.webp',
@@ -121,13 +137,16 @@ export const DEFAULT_MENU = [
   {
     id: 6,
     name: 'Cold Drinks & Juices',
-    description: 'Chilled soft drinks and refreshing beverages',
+    urduName: 'کولڈ ڈرنکس اور جوس',
+    icon: '🥤',
+    description: 'Chilled Refreshments • ٹھنڈی بوتلیں',
     displayOrder: 6,
     items: [
       {
         id: 601,
         name: 'Gourmet, Coke, Pepsi',
-        description: 'Refreshing chilled beverages & juices. Price varies by selection.',
+        urduName: 'کولڈ ڈرنکس (گورمے، کوک، پیپسی)',
+        description: 'Chilled drinks & juices • حسبِ پسند بوتل',
         price: 0,
         priceDisplay: 'Ask on WhatsApp',
         imageUrl: '/assets/images/cold-drinks.webp',

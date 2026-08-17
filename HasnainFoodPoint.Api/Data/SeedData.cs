@@ -41,15 +41,15 @@ public static class SeedData
                 new Category
                 {
                     Name = "Fries",
-                    Description = "Crispy, freshly cut golden fries with our signature spice blend",
+                    Description = "Crispy & Fresh • گرما گرم فرائز",
                     DisplayOrder = 1,
                     IsActive = true,
                     Items = new List<MenuItem>
                     {
                         new MenuItem
                         {
-                            Name = "Half Plate",
-                            Description = "Fresh, hot crispy potato fries with savory seasoning",
+                            Name = "Half Plate Fries",
+                            Description = "Crispy seasoned potato fries • ہاف پلیٹ",
                             Price = 50.00m,
                             PriceDisplay = "Rs. 50",
                             ImageUrl = "/assets/images/fries-half.webp",
@@ -58,8 +58,8 @@ public static class SeedData
                         },
                         new MenuItem
                         {
-                            Name = "Full Plate",
-                            Description = "Large generous serving of golden crispy seasoned fries",
+                            Name = "Full Plate Fries",
+                            Description = "Generous serving of hot crispy fries • فل پلیٹ",
                             Price = 100.00m,
                             PriceDisplay = "Rs. 100",
                             ImageUrl = "/assets/images/fries-full.webp",
@@ -71,7 +71,7 @@ public static class SeedData
                 new Category
                 {
                     Name = "Burger",
-                    Description = "Hot and savory freshly made street-style burgers",
+                    Description = "Fresh & Juicy • تازہ انڈہ برگر",
                     DisplayOrder = 2,
                     IsActive = true,
                     Items = new List<MenuItem>
@@ -79,7 +79,7 @@ public static class SeedData
                         new MenuItem
                         {
                             Name = "Amelet Burger",
-                            Description = "Freshly made spiced omelette patty served in a warm toasted bun with special sauce",
+                            Description = "Spiced egg patty in toasted bun • سپیشل انڈہ برگر",
                             Price = 150.00m,
                             PriceDisplay = "Rs. 150",
                             ImageUrl = "/assets/images/amelet-burger.webp",
@@ -91,7 +91,7 @@ public static class SeedData
                 new Category
                 {
                     Name = "Samosa",
-                    Description = "Traditional crispy golden samosas packed with spicy potato masala",
+                    Description = "Crispy Golden • کرسپی سموسہ",
                     DisplayOrder = 3,
                     IsActive = true,
                     Items = new List<MenuItem>
@@ -99,7 +99,7 @@ public static class SeedData
                         new MenuItem
                         {
                             Name = "Aloo Samosa",
-                            Description = "Crispy golden triangular pastry stuffed with spicy potato filling",
+                            Description = "Crispy pastry with spicy potato filling • گرما گرم سموسہ",
                             Price = 30.00m,
                             PriceDisplay = "Rs. 30",
                             ImageUrl = "/assets/images/aloo-samosa.webp",
@@ -111,7 +111,7 @@ public static class SeedData
                 new Category
                 {
                     Name = "Roll",
-                    Description = "Golden fried crispy rolls with delicious potato filling",
+                    Description = "Crunchy Snack • ذائقہ دار رول",
                     DisplayOrder = 4,
                     IsActive = true,
                     Items = new List<MenuItem>
@@ -119,7 +119,7 @@ public static class SeedData
                         new MenuItem
                         {
                             Name = "Aloo Roll",
-                            Description = "Crispy fried roll stuffed with flavorful spiced potato mix",
+                            Description = "Golden fried roll with spiced potatoes • کرسپی آلو رول",
                             Price = 10.00m,
                             PriceDisplay = "Rs. 10",
                             ImageUrl = "/assets/images/aloo-roll.webp",
@@ -131,7 +131,7 @@ public static class SeedData
                 new Category
                 {
                     Name = "Naan",
-                    Description = "Fluffy tandoori naan stuffed with seasoned potato filling",
+                    Description = "Soft & Stuffed • تندوری آلو نان",
                     DisplayOrder = 5,
                     IsActive = true,
                     Items = new List<MenuItem>
@@ -139,7 +139,7 @@ public static class SeedData
                         new MenuItem
                         {
                             Name = "Aloo Naan",
-                            Description = "Soft, warm oven-baked naan stuffed with seasoned mashed potatoes",
+                            Description = "Warm tandoori naan with spiced potatoes • تازہ تندوری نان",
                             Price = 70.00m,
                             PriceDisplay = "Rs. 70",
                             ImageUrl = "/assets/images/aloo-naan.webp",
@@ -151,7 +151,7 @@ public static class SeedData
                 new Category
                 {
                     Name = "Cold Drinks & Juices",
-                    Description = "Chilled soft drinks and refreshing beverages",
+                    Description = "Chilled Refreshments • ٹھنڈی بوتلیں",
                     DisplayOrder = 6,
                     IsActive = true,
                     Items = new List<MenuItem>
@@ -159,7 +159,7 @@ public static class SeedData
                         new MenuItem
                         {
                             Name = "Gourmet, Coke, Pepsi",
-                            Description = "Refreshing chilled beverages & juices. Price varies by size and selection.",
+                            Description = "Chilled drinks & juices • حسبِ پسند بوتل",
                             Price = 0.00m,
                             PriceDisplay = "Ask on WhatsApp",
                             ImageUrl = "/assets/images/cold-drinks.webp",

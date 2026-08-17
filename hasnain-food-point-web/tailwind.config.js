@@ -28,7 +28,8 @@ export default {
       },
       fontFamily: {
         heading: ["Poppins", "sans-serif"],
-        body: ["Inter", "Poppins", "sans-serif"],
+        body: ["Inter", "Poppins", "system-ui", "-apple-system", "sans-serif"],
+        urdu: ["'Noto Nastaliq Urdu'", "'Noto Sans Arabic'", "'Segoe UI'", "Tahoma", "sans-serif"],
       }
     },
   },

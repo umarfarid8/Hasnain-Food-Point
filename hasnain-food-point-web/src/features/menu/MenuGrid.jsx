@@ -1,13 +1,36 @@
 import { useState, useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useMenu } from '../../hooks/useMenu';
 import SectionHeading from '../../components/ui/SectionHeading';
 import MenuItemCard from './MenuItemCard';
 import { UtensilsCrossed, RefreshCw, Sparkles, Filter } from 'lucide-react';
 import Button from '../../components/ui/Button';
 
+// Category visual icon mapping for non-reading/low-literacy users
+const CATEGORY_ICONS = {
+  fries: '🍟',
+  burger: '🍔',
+  samosa: '🥟',
+  roll: '🌯',
+  naan: '🫓',
+  'cold drinks & juices': '🥤',
+  'cold drinks': '🥤',
+};
+
+const CATEGORY_URDU = {
+  fries: 'فرائز',
+  burger: 'برگر',
+  samosa: 'سموسہ',
+  roll: 'رول',
+  naan: 'نان',
+  'cold drinks & juices': 'کولڈ ڈرنکس',
+  'cold drinks': 'کولڈ ڈرنکس',
+};
+
 export default function MenuGrid() {
   const { menu, loading, error, refetch } = useMenu();
   const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const shouldReduceMotion = useReducedMotion();
 
   const categories = useMemo(() => {
     return Array.isArray(menu) ? menu : [];
@@ -27,45 +50,60 @@ export default function MenuGrid() {
   }, [categories]);
 
   return (
-    <section id="menu" className="w-full py-6 sm:py-10 scroll-mt-20">
+    <motion.section
+      id="menu"
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className="w-full py-6 sm:py-10 scroll-mt-20"
+    >
       <SectionHeading
-        badge="Our Fresh Menu"
+        badge="Our Fresh Menu • مینو"
         icon={UtensilsCrossed}
         title="Explore What's Cooking"
-        subtitle="Tap 'Order on WhatsApp' on any item to place your order directly with the shop"
+        subtitle="Tap 'Order on WhatsApp' on any item to talk directly with the shop"
       />
 
-      {/* Category Filter Pills (Mobile-First horizontal scroll) */}
+      {/* Category Filter Pills (Mobile-First horizontal touch scroll) */}
       {categories.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 my-6 no-scrollbar scroll-smooth">
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-3 my-6 no-scrollbar scroll-smooth">
           <button
             type="button"
             onClick={() => setSelectedCategory('ALL')}
-            className={`min-h-[44px] px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 border flex items-center gap-1.5 ${
+            className={`min-h-[44px] px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 border flex items-center gap-2 ${
               selectedCategory === 'ALL'
-                ? 'bg-accent-primary text-white border-accent-primary shadow-lg shadow-accent-primary/20'
+                ? 'bg-accent-primary text-white border-accent-primary shadow-lg shadow-accent-primary/20 scale-102'
                 : 'bg-bg-surface text-text-secondary border-border-subtle hover:text-text-primary hover:border-accent-primary/40'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>All Items ({totalItemCount})</span>
+            <Sparkles className="w-4 h-4" />
+            <span>All Items • تمام ({totalItemCount})</span>
           </button>
 
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => setSelectedCategory(cat.id.toString())}
-              className={`min-h-[44px] px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 border flex items-center gap-1.5 ${
-                selectedCategory === cat.id.toString()
-                  ? 'bg-accent-primary text-white border-accent-primary shadow-lg shadow-accent-primary/20'
-                  : 'bg-bg-surface text-text-secondary border-border-subtle hover:text-text-primary hover:border-accent-primary/40'
-              }`}
-            >
-              <span>{cat.name}</span>
-              <span className="text-[11px] opacity-70">({cat.items?.length || 0})</span>
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const icon = cat.icon || CATEGORY_ICONS[cat.name.toLowerCase()] || '🍽️';
+            const urdu = cat.urduName || CATEGORY_URDU[cat.name.toLowerCase()] || '';
+
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id.toString())}
+                className={`min-h-[44px] px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 border flex items-center gap-2 ${
+                  selectedCategory === cat.id.toString()
+                    ? 'bg-accent-primary text-white border-accent-primary shadow-lg shadow-accent-primary/20 scale-102'
+                    : 'bg-bg-surface text-text-secondary border-border-subtle hover:text-text-primary hover:border-accent-primary/40'
+                }`}
+              >
+                <span className="text-base" role="img" aria-hidden="true">
+                  {icon}
+                </span>
+                <span>{cat.name}</span>
+                {urdu && <span className="text-xs opacity-90">({urdu})</span>}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -103,31 +141,43 @@ export default function MenuGrid() {
       {/* Menu Categories List */}
       {!loading && filteredCategories.length > 0 && (
         <div className="space-y-10 sm:space-y-12">
-          {filteredCategories.map((category) => (
-            <div key={category.id} className="space-y-4">
-              {/* Category Header */}
-              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-border-subtle pb-3 gap-1">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-accent-primary" />
-                  <h3 className="text-xl sm:text-2xl font-heading font-bold text-accent-secondary">
-                    {category.name}
-                  </h3>
-                </div>
-                {category.description && (
-                  <p className="text-xs sm:text-sm text-text-secondary">
-                    {category.description}
-                  </p>
-                )}
-              </div>
+          {filteredCategories.map((category) => {
+            const icon = category.icon || CATEGORY_ICONS[category.name.toLowerCase()] || '🍽️';
+            const urdu = category.urduName || CATEGORY_URDU[category.name.toLowerCase()] || '';
 
-              {/* Items Grid (1-col on phone 360-480px, 2-col on sm/md/lg) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                {category.items?.map((item) => (
-                  <MenuItemCard key={item.id} item={item} />
-                ))}
+            return (
+              <div key={category.id} className="space-y-4">
+                {/* Category Header */}
+                <div className="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-border-subtle pb-3 gap-1">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl" role="img" aria-hidden="true">
+                      {icon}
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-heading font-bold text-accent-secondary">
+                      {category.name}
+                    </h3>
+                    {urdu && (
+                      <span className="text-sm sm:text-base font-bold text-text-primary px-2 py-0.5 rounded bg-bg-surface border border-border-subtle">
+                        {urdu}
+                      </span>
+                    )}
+                  </div>
+                  {category.description && (
+                    <p className="text-xs sm:text-sm text-text-secondary">
+                      {category.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Items Grid (1-col on phone 360-480px, 2-col on sm/md/lg) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {category.items?.map((item, index) => (
+                    <MenuItemCard key={item.id} item={item} index={index} />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -143,6 +193,6 @@ export default function MenuGrid() {
           </Button>
         </div>
       )}
-    </section>
+    </motion.section>
   );
 }
