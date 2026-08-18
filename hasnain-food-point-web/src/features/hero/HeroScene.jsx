@@ -4,6 +4,7 @@ import { useSettings } from '../../hooks/useSettings';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
 import Button from '../../components/ui/Button';
 import SplineHero from './SplineHero';
+import { openExternalUrl, scrollToSection } from '../../lib/navigation';
 
 export default function HeroScene() {
   const { settings } = useSettings();
@@ -90,20 +91,25 @@ export default function HeroScene() {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              openExternalUrl(waLink);
+            }}
             variant="whatsapp"
             size="lg"
             icon={MessageCircle}
-            className="w-full sm:w-auto shadow-lg shadow-whatsapp/25 text-base font-bold min-h-[48px]"
+            className="w-full sm:w-auto shadow-lg shadow-whatsapp/25 text-base font-bold min-h-[48px] cursor-pointer"
           >
             Order on WhatsApp
           </Button>
           <Button
             as="a"
             href="#menu"
+            onClick={(e) => scrollToSection('menu', e)}
             variant="outline"
             size="lg"
             icon={ChevronDown}
-            className="w-full sm:w-auto text-base min-h-[48px]"
+            className="w-full sm:w-auto text-base min-h-[48px] cursor-pointer"
           >
             View Menu • مینو دیکھیں
           </Button>

@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Android / Keystores / Local
+*.apk
+*.aab
+*.jks
+*.keystore
+key.properties
+keystore.properties
+local.properties
+.env.local
+.env.*.local
+

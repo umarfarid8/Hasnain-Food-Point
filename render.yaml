@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: hasnain-food-point-api
+    runtime: docker
+    dockerfilePath: ./HasnainFoodPoint.Api/Dockerfile
+    dockerContext: ./HasnainFoodPoint.Api
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false # Set in Render Dashboard (e.g. Azure SQL or remote SQL Server)
+      - key: Cors__AllowedOrigins
+        value: "http://localhost:5173,https://localhost,capacitor://localhost,http://localhost"

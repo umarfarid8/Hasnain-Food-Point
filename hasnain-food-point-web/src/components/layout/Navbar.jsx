@@ -4,6 +4,7 @@ import { Flame, MessageCircle, Clock, Menu as MenuIcon, X } from 'lucide-react';
 import { useSettings } from '../../hooks/useSettings';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
 import { NAV_LINKS, SHOP_NAME } from '../../lib/constants';
+import { scrollToSection, openExternalUrl } from '../../lib/navigation';
 
 export default function Navbar() {
   const { settings } = useSettings();
@@ -33,7 +34,8 @@ export default function Navbar() {
         {/* Brand Logo / Name */}
         <a
           href="#hero"
-          className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary rounded-lg"
+          onClick={(e) => scrollToSection('hero', e)}
+          className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary rounded-lg cursor-pointer"
           aria-label={settings.name || SHOP_NAME}
         >
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center shadow-md shadow-accent-primary/20 group-hover:scale-105 transition-transform">
@@ -56,7 +58,8 @@ export default function Navbar() {
             <a
               key={link.href}
               href={link.href}
-              className="text-text-secondary hover:text-text-primary font-medium text-sm transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary rounded"
+              onClick={(e) => scrollToSection(link.href, e)}
+              className="text-text-secondary hover:text-text-primary font-medium text-sm transition-colors py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary rounded cursor-pointer"
             >
               {link.label}
             </a>
@@ -69,7 +72,11 @@ export default function Navbar() {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl bg-whatsapp hover:bg-[#20bd5a] text-white text-sm font-semibold flex items-center gap-2 shadow-md shadow-whatsapp/20 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-whatsapp"
+            onClick={(e) => {
+              e.preventDefault();
+              openExternalUrl(waLink);
+            }}
+            className="min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl bg-whatsapp hover:bg-[#20bd5a] text-white text-sm font-semibold flex items-center gap-2 shadow-md shadow-whatsapp/20 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-whatsapp cursor-pointer"
             aria-label="Order on WhatsApp"
           >
             <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
@@ -103,8 +110,11 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2.5 rounded-lg text-base font-medium text-text-secondary hover:text-text-primary hover:bg-bg-primary/50 transition-colors"
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  scrollToSection(link.href, e);
+                }}
+                className="block px-3 py-2.5 rounded-lg text-base font-medium text-text-secondary hover:text-text-primary hover:bg-bg-primary/50 transition-colors cursor-pointer"
               >
                 {link.label}
               </a>

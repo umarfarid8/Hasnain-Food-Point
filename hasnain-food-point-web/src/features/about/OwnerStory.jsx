@@ -5,6 +5,7 @@ import SectionHeading from '../../components/ui/SectionHeading';
 import Button from '../../components/ui/Button';
 import { useSettings } from '../../hooks/useSettings';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
+import { openExternalUrl } from '../../lib/navigation';
 
 export default function OwnerStory() {
   const { settings } = useSettings();
@@ -120,10 +121,14 @@ export default function OwnerStory() {
                 href={ownerChatLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openExternalUrl(ownerChatLink);
+                }}
                 variant="outline"
                 size="md"
                 icon={MessageCircle}
-                className="text-xs sm:text-sm min-h-[44px]"
+                className="text-xs sm:text-sm min-h-[44px] cursor-pointer"
               >
                 Send a Message to Hasnain
               </Button>

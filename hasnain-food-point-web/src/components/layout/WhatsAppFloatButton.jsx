@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
+import { openExternalUrl } from '../../lib/navigation';
 
 export default function WhatsAppFloatButton() {
   const { buildWhatsAppLink, displayNumber } = useWhatsAppLink();
@@ -22,7 +23,11 @@ export default function WhatsAppFloatButton() {
         href={waLink}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-whatsapp hover:bg-[#20bd5a] text-white font-bold text-sm shadow-xl shadow-whatsapp/30 hover:shadow-whatsapp/50 transition-colors duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/40 min-h-[48px] min-w-[48px]"
+        onClick={(e) => {
+          e.preventDefault();
+          openExternalUrl(waLink);
+        }}
+        className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-whatsapp hover:bg-[#20bd5a] text-white font-bold text-sm shadow-xl shadow-whatsapp/30 hover:shadow-whatsapp/50 transition-colors duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-whatsapp/40 min-h-[48px] min-w-[48px] cursor-pointer"
         aria-label={`Order on WhatsApp at ${displayNumber}`}
       >
         {/* Pulsing beacon behind the icon */}

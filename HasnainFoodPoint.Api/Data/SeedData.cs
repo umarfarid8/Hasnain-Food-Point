@@ -24,7 +24,7 @@ public static class SeedData
                 WhatsAppRawNumber = "923051589494",
                 Address = "94/9-L, Sahiwal",
                 OpeningHours = "12:00 PM – 9:00 PM, daily",
-                MapUrl = "https://maps.google.com/?q=94/9-L+Sahiwal",
+                MapUrl = "https://maps.app.goo.gl/pbYxzzyQbwvbU8897",
                 OwnerName = "Hasnain Zafar",
                 OwnerStory = "Hasnain Zafar started Hasnain Food Point right here in Sahiwal with one simple idea — serve fresh, honest food, made the way he'd want to eat it himself. What began as a small food point has become a daily stop for fries, rolls, and burgers made fresh to order. Every plate carries his name, so every plate gets his full attention.",
                 OwnerPhotoUrl = "/assets/images/owner.webp"

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { MessageCircle, Utensils, Flame } from 'lucide-react';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
+import { openExternalUrl } from '../../lib/navigation';
 
 export default function MenuItemCard({ item, index = 0 }) {
   const { buildItemOrderLink } = useWhatsAppLink();
@@ -130,7 +131,11 @@ export default function MenuItemCard({ item, index = 0 }) {
             href={orderLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="min-h-[44px] px-4 py-2.5 rounded-xl bg-whatsapp hover:bg-[#20bd5a] text-white font-heading font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md shadow-whatsapp/25 hover:shadow-whatsapp/40"
+            onClick={(e) => {
+              e.preventDefault();
+              openExternalUrl(orderLink);
+            }}
+            className="min-h-[44px] px-4 py-2.5 rounded-xl bg-whatsapp hover:bg-[#20bd5a] text-white font-heading font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all duration-200 shadow-md shadow-whatsapp/25 hover:shadow-whatsapp/40 cursor-pointer"
             aria-label={`Order ${item.name} on WhatsApp`}
           >
             <MessageCircle className="w-4 h-4 fill-current flex-shrink-0" />

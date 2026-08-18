@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
+    "@capacitor/browser": "^8.0.4",
     "@capacitor/core": "^8.5.0",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.98",
@@ -27,6 +28,7 @@
     "autoprefixer": "^10.5.4",
     "oxlint": "^1.75.0",
     "postcss": "^8.5.26",
+    "sharp": "^0.35.3",
     "tailwindcss": "^3.4.19",
     "vite": "^8.2.0"
   }

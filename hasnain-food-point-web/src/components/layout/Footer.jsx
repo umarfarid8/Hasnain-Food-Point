@@ -2,14 +2,11 @@ import { Flame, MessageCircle, MapPin, Clock, Phone, ArrowUp } from 'lucide-reac
 import { useSettings } from '../../hooks/useSettings';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
 import { NAV_LINKS, SHOP_NAME } from '../../lib/constants';
+import { openExternalUrl, scrollToSection } from '../../lib/navigation';
 
 export default function Footer() {
   const { settings } = useSettings();
   const { buildWhatsAppLink, displayNumber } = useWhatsAppLink();
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   const waLink = buildWhatsAppLink();
 
@@ -35,7 +32,11 @@ export default function Footer() {
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-whatsapp hover:bg-[#20bd5a] text-white text-sm font-semibold shadow-md shadow-whatsapp/20 transition-all min-h-[44px]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openExternalUrl(waLink);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-whatsapp hover:bg-[#20bd5a] text-white text-sm font-semibold shadow-md shadow-whatsapp/20 transition-all min-h-[44px] cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 fill-current" />
                 <span>Order on WhatsApp ({displayNumber})</span>
@@ -53,7 +54,8 @@ export default function Footer() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="inline-block py-1 text-sm text-text-secondary hover:text-accent-secondary transition-colors"
+                    onClick={(e) => scrollToSection(link.href, e)}
+                    className="inline-block py-1 text-sm text-text-secondary hover:text-accent-secondary transition-colors cursor-pointer"
                   >
                     {link.label}
                   </a>
@@ -89,8 +91,8 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} {settings.name || SHOP_NAME}. All rights reserved.</p>
           <button
             type="button"
-            onClick={scrollToTop}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-bg-primary hover:bg-bg-primary/80 text-text-secondary hover:text-text-primary border border-border-subtle transition-colors min-h-[44px]"
+            onClick={(e) => scrollToSection('hero', e)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-bg-primary hover:bg-bg-primary/80 text-text-secondary hover:text-text-primary border border-border-subtle transition-colors min-h-[44px] cursor-pointer"
             aria-label="Scroll to top of page"
           >
             <span>Back to top</span>

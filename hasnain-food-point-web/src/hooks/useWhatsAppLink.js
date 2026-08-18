@@ -5,6 +5,7 @@ import {
   DEFAULT_GENERAL_MESSAGE,
   DEFAULT_WHATSAPP_RAW,
 } from '../lib/constants';
+import { openExternalUrl } from '../lib/navigation';
 
 function cleanWhatsAppNumber(number) {
   if (!number) return DEFAULT_WHATSAPP_RAW;
@@ -44,7 +45,7 @@ export function useWhatsAppLink() {
   const openWhatsApp = useCallback(
     (text = DEFAULT_GENERAL_MESSAGE, overrideNumber = null) => {
       const url = buildWhatsAppLink(text, overrideNumber);
-      window.open(url, '_blank', 'noopener,noreferrer');
+      openExternalUrl(url);
     },
     [buildWhatsAppLink]
   );

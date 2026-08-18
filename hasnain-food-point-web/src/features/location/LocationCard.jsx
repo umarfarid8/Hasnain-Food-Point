@@ -4,6 +4,7 @@ import SectionHeading from '../../components/ui/SectionHeading';
 import Button from '../../components/ui/Button';
 import { useSettings } from '../../hooks/useSettings';
 import { useWhatsAppLink } from '../../hooks/useWhatsAppLink';
+import { openExternalUrl } from '../../lib/navigation';
 
 export default function LocationCard() {
   const { settings } = useSettings();
@@ -13,12 +14,9 @@ export default function LocationCard() {
     'Hi! I would like to ask about directions or pickup at Hasnain Food Point.'
   );
 
-  // TODO: Update with client's exact Google Maps pin coordinates when provided
   const address = settings.address || '94/9-L, Sahiwal';
   const openingHours = settings.openingHours || '12:00 PM – 9:00 PM, Daily';
-  const mapLink =
-    settings.mapUrl ||
-    `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+  const mapLink = settings.mapUrl || 'https://maps.app.goo.gl/pbYxzzyQbwvbU8897';
 
   return (
     <motion.section
@@ -117,10 +115,14 @@ export default function LocationCard() {
             href={mapLink}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              openExternalUrl(mapLink);
+            }}
             variant="secondary"
             size="lg"
             icon={Navigation}
-            className="w-full sm:w-auto font-semibold min-h-[48px]"
+            className="w-full sm:w-auto font-semibold min-h-[48px] cursor-pointer"
           >
             Get Directions in Maps • راستہ دیکھیں
           </Button>
@@ -130,10 +132,14 @@ export default function LocationCard() {
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              e.preventDefault();
+              openExternalUrl(waLink);
+            }}
             variant="whatsapp"
             size="lg"
             icon={MessageCircle}
-            className="w-full sm:w-auto font-semibold shadow-lg shadow-whatsapp/20 min-h-[48px]"
+            className="w-full sm:w-auto font-semibold shadow-lg shadow-whatsapp/20 min-h-[48px] cursor-pointer"
           >
             Ask on WhatsApp ({displayNumber})
           </Button>

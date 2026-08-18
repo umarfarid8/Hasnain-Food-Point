@@ -4,7 +4,7 @@ export const DEFAULT_WHATSAPP_NUMBER = '0305 1589494';
 export const DEFAULT_WHATSAPP_RAW = '923051589494';
 export const DEFAULT_ADDRESS = '94/9-L, Sahiwal';
 export const DEFAULT_OPENING_HOURS = '12:00 PM – 9:00 PM, Daily';
-export const DEFAULT_MAP_URL = 'https://maps.google.com/?q=94/9-L,Sahiwal';
+export const DEFAULT_MAP_URL = 'https://maps.app.goo.gl/pbYxzzyQbwvbU8897';
 export const DEFAULT_OWNER_NAME = 'Hasnain Zafar';
 export const DEFAULT_OWNER_STORY =
   "Hasnain Zafar started Hasnain Food Point right here in Sahiwal with one simple idea — serve fresh, honest food, made the way he'd want to eat it himself. What began as a small food point has become a daily stop for fries, rolls, and burgers made fresh to order. Every plate carries his name, so every plate gets his full attention.";
