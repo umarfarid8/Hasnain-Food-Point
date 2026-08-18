@@ -19,4 +19,4 @@ services:
       - key: ConnectionStrings__DefaultConnection
         value: Data Source=hasnain_food_point.db
       - key: Cors__AllowedOrigins
-        value: "http://localhost:5173,https://localhost,capacitor://localhost,http://localhost,https://hasnain-food-point.vercel.app,https://hasnain-food-point.netlify.app"
+        value: "https://hasnainfoodpoint.netlify.app,http://localhost:5173,https://localhost,capacitor://localhost,http://localhost,https://hasnain-food-point.vercel.app,https://hasnain-food-point.netlify.app"

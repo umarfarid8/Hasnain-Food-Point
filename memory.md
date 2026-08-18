@@ -2,10 +2,10 @@
 
 Living status file. The agent (and you) should update this **at the end of every session/task** — that's how a fresh Antigravity session picks up context cheaply instead of re-reading the whole codebase.
 
-Last updated: 2026-08-18 (Frontend Configured for Render Deployed Backend URL)
+Last updated: 2026-08-18 (Backend CORS Configured for https://hasnainfoodpoint.netlify.app)
 
 ## Current Phase
-`Phase 7 Complete — Frontend Wired to Live Render Backend & Web Deployment Ready`
+`Phase 7 Complete — Backend CORS Configured & Web Deployment Ready`
 
 ## Completed
 - [x] Phase 0 — Project Setup (incl. Capacitor Android shell)
@@ -16,7 +16,7 @@ Last updated: 2026-08-18 (Frontend Configured for Render Deployed Backend URL)
 - [x] Phase 5 — Low-Literacy & Performance Pass
 - [x] Phase 6 — Deploy Backend & Build Signed APK
 - [x] Android Bug Fixes & App Label: Handled native app intent handoff with `@capacitor/browser`, programmatic smooth scroll in WebView, and updated Android app name to `HFP`.
-- [x] Phase 7 — Web Deploy, Admin Panel, SQLite Migration & Live API Configuration:
+- [x] Phase 7 — Web Deploy, Admin Panel, SQLite Migration & CORS Configuration:
   - Single-password admin authentication (JWT).
   - Price and availability update API (`PUT /api/admin/menu-items/{id}`).
   - Unlinked `/admin` portal on frontend.
@@ -24,21 +24,27 @@ Last updated: 2026-08-18 (Frontend Configured for Render Deployed Backend URL)
   - Added `public/robots.txt` disallowing `/admin` indexing.
   - Switched database provider to SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) for zero-cost, zero-setup production hosting on Render free tier.
   - Updated `Dockerfile` and `render.yaml` Blueprint for 1-click Dockerized Render deployment.
-  - Wired frontend API base URL (`VITE_API_URL`) to `https://hasnain-food-point-api.onrender.com/api` across `.env`, `.env.production`, and `src/lib/api.js` for both public customer menu and admin management.
+  - Wired frontend API base URL (`VITE_API_URL`) to `https://hasnain-food-point-api.onrender.com/api`.
+  - Configured backend CORS policy to explicitly allow `https://hasnainfoodpoint.netlify.app` across `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
   - Verified that Android/Capacitor project was 100% untouched.
 
 ## File Currently Being Worked On
-Completed Frontend API Configuration for Deployed Render Backend:
-1. **API Base URL Environment Configuration**:
-   - Updated `hasnain-food-point-web/.env` and `.env.production`: `VITE_API_URL=https://hasnain-food-point-api.onrender.com/api`.
-   - Updated `hasnain-food-point-web/src/lib/api.js` default fallback to `https://hasnain-food-point-api.onrender.com/api`.
-   - All customer hooks (`useMenu`, `useSettings`) and admin methods (`adminLogin`, `fetchAdminMenuItems`, `updateAdminMenuItem`) automatically use this deployed endpoint.
-2. **Build Validation**:
-   - Ran `npm run build` to package the production `dist/` bundle pointing to the live Render backend.
+Completed Backend CORS Policy Configuration for Netlify Web Deployment:
+1. **CORS Policy Update**:
+   - Explicitly added `https://hasnainfoodpoint.netlify.app` and `hasnainfoodpoint.netlify.app` host matching in `HasnainFoodPoint.Api/Program.cs`.
+   - Added `https://hasnainfoodpoint.netlify.app` to `appsettings.Production.json` and `appsettings.json`.
+   - Updated `render.yaml` environment variable `Cors__AllowedOrigins` with `https://hasnainfoodpoint.netlify.app`.
+2. **CORS Verification**:
+   - Validated via HTTP preflight (`OPTIONS`) and `GET` requests against the running API with `Origin: https://hasnainfoodpoint.netlify.app`.
+   - Response returned `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app` and `Access-Control-Allow-Methods: GET`.
 3. **Android / Capacitor Project Integrity**:
    - Confirmed `hasnain-food-point-web/android/` was **100% untouched**.
 
 ## Decisions Log
+- `2026-08-18` — Configured Backend CORS for Netlify Production Domain:
+  1. Whitelisted `https://hasnainfoodpoint.netlify.app` in `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
+  2. Ensures all API requests from Netlify (`/api/menu`, `/api/settings`, `/api/admin/login`, `/api/admin/menu-items`) execute without browser CORS blocks.
+
 - `2026-08-18` — Wired Frontend to Deployed Render Backend URL:
   1. Configured `VITE_API_URL` to `https://hasnain-food-point-api.onrender.com/api` in `.env`, `.env.production`, and fallback in `src/lib/api.js`.
   2. Ensures both web build (Vercel/Netlify) and APK communicate with the cloud-hosted backend.

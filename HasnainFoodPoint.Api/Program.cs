@@ -67,7 +67,11 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+var configuredOrigins = (builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? builder.Configuration["Cors:AllowedOrigins"]?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? Array.Empty<string>())
+    .Select(o => o.TrimEnd('/'))
+    .ToArray();
 
 builder.Services.AddCors(options =>
 {
@@ -76,16 +80,26 @@ builder.Services.AddCors(options =>
         policy.SetIsOriginAllowed(origin =>
             {
                 if (string.IsNullOrEmpty(origin)) return false;
-                var uri = new Uri(origin);
-                return uri.Host == "localhost" ||
-                       uri.Host == "127.0.0.1" ||
-                       origin.StartsWith("capacitor://") ||
-                       origin.StartsWith("http://localhost") ||
-                       origin.StartsWith("https://localhost") ||
-                       origin.EndsWith(".vercel.app") ||
-                       origin.EndsWith(".netlify.app") ||
-                       origin.EndsWith(".surge.sh") ||
-                       configuredOrigins.Any(co => string.Equals(co.TrimEnd('/'), origin.TrimEnd('/'), StringComparison.OrdinalIgnoreCase));
+                var cleanOrigin = origin.TrimEnd('/');
+                try
+                {
+                    var uri = new Uri(origin);
+                    return uri.Host == "localhost" ||
+                           uri.Host == "127.0.0.1" ||
+                           uri.Host.Equals("hasnainfoodpoint.netlify.app", StringComparison.OrdinalIgnoreCase) ||
+                           cleanOrigin.Equals("https://hasnainfoodpoint.netlify.app", StringComparison.OrdinalIgnoreCase) ||
+                           origin.StartsWith("capacitor://", StringComparison.OrdinalIgnoreCase) ||
+                           origin.StartsWith("http://localhost", StringComparison.OrdinalIgnoreCase) ||
+                           origin.StartsWith("https://localhost", StringComparison.OrdinalIgnoreCase) ||
+                           origin.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase) ||
+                           origin.EndsWith(".netlify.app", StringComparison.OrdinalIgnoreCase) ||
+                           origin.EndsWith(".surge.sh", StringComparison.OrdinalIgnoreCase) ||
+                           configuredOrigins.Any(co => string.Equals(co, cleanOrigin, StringComparison.OrdinalIgnoreCase));
+                }
+                catch
+                {
+                    return configuredOrigins.Any(co => string.Equals(co, cleanOrigin, StringComparison.OrdinalIgnoreCase));
+                }
             })
             .AllowAnyHeader()
             .AllowAnyMethod();
