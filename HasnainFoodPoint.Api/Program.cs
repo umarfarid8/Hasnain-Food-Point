@@ -17,8 +17,25 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var dbProvider = builder.Configuration["DatabaseProvider"] ?? "Sqlite";
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (dbProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase) && 
+        !string.IsNullOrEmpty(connectionString) && 
+        !connectionString.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseSqlServer(connectionString);
+    }
+    else
+    {
+        var sqliteConn = string.IsNullOrWhiteSpace(connectionString) || !connectionString.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase)
+            ? "Data Source=hasnain_food_point.db"
+            : connectionString;
+        options.UseSqlite(sqliteConn);
+    }
+});
 
 // Configure JWT Authentication
 var jwtSecret = builder.Configuration["AdminSettings:JwtSecret"] 

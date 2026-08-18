@@ -1,4 +1,4 @@
-# .NET / C#
+# .NET / C# / SQLite
 bin/
 obj/
 *.user
@@ -6,6 +6,10 @@ obj/
 *.sln.docstates
 .vs/
 .vscode/
+*.db
+*.db-wal
+*.db-shm
+
 
 # Node / Frontend
 node_modules/

@@ -7,11 +7,8 @@ public static class SeedData
 {
     public static async Task InitializeAsync(AppDbContext context)
     {
-        // Apply any pending migrations
-        if (context.Database.IsRelational())
-        {
-            await context.Database.MigrateAsync();
-        }
+        // Ensure database and schema are created
+        await context.Database.EnsureCreatedAsync();
 
         // Seed BusinessInfo if not present
         if (!await context.BusinessInfos.AnyAsync())

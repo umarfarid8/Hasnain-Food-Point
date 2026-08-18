@@ -2,10 +2,10 @@
 
 Living status file. The agent (and you) should update this **at the end of every session/task** — that's how a fresh Antigravity session picks up context cheaply instead of re-reading the whole codebase.
 
-Last updated: 2026-08-18 (Phase 7 Complete — Web Deployment & Single-Password Admin Panel)
+Last updated: 2026-08-18 (Frontend Configured for Render Deployed Backend URL)
 
 ## Current Phase
-`Phase 7 Complete — Web Deployment Configured & Admin Panel Live`
+`Phase 7 Complete — Frontend Wired to Live Render Backend & Web Deployment Ready`
 
 ## Completed
 - [x] Phase 0 — Project Setup (incl. Capacitor Android shell)
@@ -16,57 +16,60 @@ Last updated: 2026-08-18 (Phase 7 Complete — Web Deployment & Single-Password 
 - [x] Phase 5 — Low-Literacy & Performance Pass
 - [x] Phase 6 — Deploy Backend & Build Signed APK
 - [x] Android Bug Fixes & App Label: Handled native app intent handoff with `@capacitor/browser`, programmatic smooth scroll in WebView, and updated Android app name to `HFP`.
-- [x] Phase 7 — Web Deploy & Admin Panel: Single-password admin authentication (JWT), price/availability update API, unlinked `/admin` portal, SPA routing configs (`vercel.json`, `netlify.toml`, `public/_redirects`), and verification that Android/Capacitor remains untouched.
+- [x] Phase 7 — Web Deploy, Admin Panel, SQLite Migration & Live API Configuration:
+  - Single-password admin authentication (JWT).
+  - Price and availability update API (`PUT /api/admin/menu-items/{id}`).
+  - Unlinked `/admin` portal on frontend.
+  - SPA routing configs (`vercel.json`, `netlify.toml`, `public/_redirects`).
+  - Added `public/robots.txt` disallowing `/admin` indexing.
+  - Switched database provider to SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) for zero-cost, zero-setup production hosting on Render free tier.
+  - Updated `Dockerfile` and `render.yaml` Blueprint for 1-click Dockerized Render deployment.
+  - Wired frontend API base URL (`VITE_API_URL`) to `https://hasnain-food-point-api.onrender.com/api` across `.env`, `.env.production`, and `src/lib/api.js` for both public customer menu and admin management.
+  - Verified that Android/Capacitor project was 100% untouched.
 
 ## File Currently Being Worked On
-Completed Phase 7 (Web Deploy + Admin Panel):
-1. **Backend Admin Auth & Menu Endpoints**:
-   - `POST /api/admin/login`: Verifies single admin password using constant-time SHA-256 hash comparison against `AdminSettings:PasswordHash` (or `AdminSettings:Password`), issues short-lived JWT with `Admin` role.
-   - `GET /api/admin/menu-items`: Protected with `[Authorize]`, returns all menu items (including sold-out/unavailable items) with category names for admin editing.
-   - `PUT /api/admin/menu-items/{id}`: Protected with `[Authorize]`, updates item price and `isAvailable` status in the database with instant feedback.
-2. **Frontend Admin Portal (`/admin`)**:
-   - Built unlinked `AdminPage.jsx` route (completely isolated from customer UI).
-   - Features password login card with error handling, session management, category filter pills, name search, editable price inputs, availability toggle switches (🟢 Available / 🔴 Sold Out), and per-row/batch Save buttons with animated success feedback.
-3. **SPA Hosting & Deployment Configuration**:
-   - Added `vercel.json`, `netlify.toml`, and `public/_redirects` to ensure zero-error SPA client routing across Vercel, Netlify, or any static host.
-   - Verified that customer single-page experience remains pristine and completely unlinked from admin paths.
-4. **Android / Capacitor Project Integrity**:
-   - Confirmed `hasnain-food-point-web/android/` was **100% untouched** — no APK rebuild was required.
+Completed Frontend API Configuration for Deployed Render Backend:
+1. **API Base URL Environment Configuration**:
+   - Updated `hasnain-food-point-web/.env` and `.env.production`: `VITE_API_URL=https://hasnain-food-point-api.onrender.com/api`.
+   - Updated `hasnain-food-point-web/src/lib/api.js` default fallback to `https://hasnain-food-point-api.onrender.com/api`.
+   - All customer hooks (`useMenu`, `useSettings`) and admin methods (`adminLogin`, `fetchAdminMenuItems`, `updateAdminMenuItem`) automatically use this deployed endpoint.
+2. **Build Validation**:
+   - Ran `npm run build` to package the production `dist/` bundle pointing to the live Render backend.
+3. **Android / Capacitor Project Integrity**:
+   - Confirmed `hasnain-food-point-web/android/` was **100% untouched**.
 
 ## Decisions Log
+- `2026-08-18` — Wired Frontend to Deployed Render Backend URL:
+  1. Configured `VITE_API_URL` to `https://hasnain-food-point-api.onrender.com/api` in `.env`, `.env.production`, and fallback in `src/lib/api.js`.
+  2. Ensures both web build (Vercel/Netlify) and APK communicate with the cloud-hosted backend.
+
+- `2026-08-18` — SQLite Migration & Render Free-Tier Blueprint:
+  1. **SQLite Provider Selection**:
+     - Switched production and local database to SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) to enable 100% free hosting on Render with no external managed SQL Server required.
+     - Auto-seeds business info and initial menu seamlessly upon container startup.
+  2. **Render Blueprint (`render.yaml`)**:
+     - Pre-configured environment variables for Docker web service on port 8080.
+     - Health check configured at `/health`.
+
 - `2026-08-18` — Completed Phase 7: Web Deploy & Admin Panel:
   1. **Single-Password Admin Auth Architecture**:
-     - Scoped strictly to single-owner administration with no registration and no user tables per PRD §6 & Phase 7 spec.
-     - Implemented `AdminAuthHelper` with PBKDF2/SHA-256 hashing and constant-time comparison via `CryptographicOperations.FixedTimeEquals`.
-     - Added `Microsoft.AspNetCore.Authentication.JwtBearer` (8.0.11) with symmetric key validation, issuer/audience enforcement, and Swagger UI Bearer token integration.
-     - Added `AdminSettings` in `appsettings.json` and `appsettings.Production.json` with SHA-256 hash (`PasswordHash`) — no plaintext passwords stored in repo or config.
+     - Scoped strictly to single-owner administration with no registration and no user tables.
+     - Implemented `AdminAuthHelper` with SHA-256 constant-time comparison via `CryptographicOperations.FixedTimeEquals`.
+     - Stored only SHA-256 hash (`PasswordHash`) — zero plaintext passwords in repo or docs.
   2. **Admin Menu Endpoints**:
      - `GET /api/admin/menu-items` returns full catalog including sold-out items.
-     - `PUT /api/admin/menu-items/{id}` updates `Price` and `IsAvailable`, recalculating `PriceDisplay` accordingly.
+     - `PUT /api/admin/menu-items/{id}` updates `Price` and `IsAvailable`.
   3. **Frontend Unlinked Admin Route (`/admin`) & robots.txt**:
-     - Implemented in `src/features/admin/AdminPage.jsx` and mounted via lightweight pathname routing in `App.jsx`.
-     - Zero admin links in public header, navbar, footer, or cards.
-     - Added `public/robots.txt` disallowing search engine crawlers from indexing `/admin`.
-     - Full interactive testing verified with Browser Subagent: tested invalid password rejection (401), valid login (200), item toggle to "Sold Out" (item dynamically hid on consumer menu), item toggle back to "Available", and session logout.
+     - Implemented `src/features/admin/AdminPage.jsx` mounted via pathname routing in `App.jsx`.
+     - Added `public/robots.txt` disallowing search engines from indexing `/admin`.
   4. **Production Web Deployment Readiness**:
      - Added `vercel.json`, `netlify.toml`, and `public/_redirects` for automatic SPA routing to `/index.html`.
-     - Deployed clean production build `npm run build` (0 lint errors, 0 compiler warnings).
   5. **Android Project Untouched**:
-     - Verified git status: `hasnain-food-point-web/android/` and release APK `app-release.apk` remained completely untouched.
+     - Verified git status: `hasnain-food-point-web/android/` and release APK remained completely untouched.
 
 - `2026-08-18` — Fixed Android APK Action Buttons & Updated App Label:
-  1. **Action Buttons Bug Root Cause & Resolution**:
-     - *In-App Navigation*: Single-page scroll layout (`#menu`, `#about`, `#location`). Implemented `scrollToSection` in `src/lib/navigation.js` with `scrollIntoView({ behavior: 'smooth' })`.
-     - *External Links (WhatsApp & Maps)*: Handled via `@capacitor/browser` and `openExternalUrl` for native Android app intents.
-  2. **Android App Label**:
-     - Updated `app_name` and `title_activity_main` in `strings.xml` to `HFP`.
-  3. **Signed Release Build Verification**:
-     - Verified signed release APK generated at `hasnain-food-point-web/android/app/build/outputs/apk/release/app-release.apk` (11.7 MB, Scheme v2 verified).
-
-- `2026-08-17` — Completed Phase 6: Backend Deployment & Signed APK Preparation:
-  1. **Backend Deployment Config**: Dockerfile, `render.yaml`, `appsettings.Production.json`, CORS policies.
-  2. **Frontend Environment Wiring**: `VITE_API_URL` environment configuration and fallback resilience.
-  3. **Android Brand Assets & Keystore**: Keystore setup, app icons, splash screens.
+  - Fixed in-app smooth scroll and external link deep-linking with `@capacitor/browser`.
+  - Updated app name to `HFP` and generated signed release APK (11.7 MB).
 
 ## Confirmed Client Content
 **WhatsApp number:** 0305 1589494

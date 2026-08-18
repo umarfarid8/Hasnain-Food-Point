@@ -1,5 +1,8 @@
 # Stage 1: Base runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER root
+WORKDIR /app
+RUN mkdir -p /app/data && chown -R app:app /app
 USER app
 WORKDIR /app
 EXPOSE 8080
@@ -22,5 +25,5 @@ RUN dotnet publish "HasnainFoodPoint.Api.csproj" -c $BUILD_CONFIGURATION -o /app
 # Stage 4: Final runtime image
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish --chown=app:app /app/publish .
 ENTRYPOINT ["dotnet", "HasnainFoodPoint.Api.dll"]
