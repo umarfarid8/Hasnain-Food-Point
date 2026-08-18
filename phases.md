@@ -69,14 +69,31 @@ This is a good phase to do semi-manually rather than fully agent-driven — sign
 
 ---
 
-### Phase 6.5 (later, when you decide to go web) — Deploy the Web Version
-**Goal:** The same build, also live as a website. Only do this when you actually want it — it's not blocking the APK.
+### Phase 6.5 → now Phase 7 — Web Deploy + Admin Panel
+**Goal:** Web version live at a real URL (needed so the owner can reach `/admin` — the APK has no address bar), plus a password-protected admin page to edit prices and toggle item availability.
+
+**Scope (confirmed):** owner can edit price and toggle available/sold-out per item only. No add/delete items, no category editing, no photo upload, no business-info editing — keep it to exactly this.
+
 ```
-Deploy the existing hasnain-food-point-web dist/ build to Vercel or Netlify, unchanged.
-Update memory.md.
+Implement Phase 7 from @phases.md:
+1. Deploy hasnain-food-point-web's existing dist/ build to Vercel or Netlify, unchanged,
+   at a real public URL.
+2. Backend: add a single-password admin auth — POST /api/admin/login checks a password
+   stored in appsettings (hashed, not plaintext) against AdminSettings:Password, returns a
+   short-lived JWT on success. No user table, no registration flow — this is a deliberate
+   single-owner exception to the "no auth" rule in rules.md, scoped to just this endpoint
+   and the two below.
+3. Backend: add PUT /api/admin/menu-items/{id} (body: price, isAvailable), protected by
+   the JWT from step 2.
+4. Frontend: add an /admin route (not linked from anywhere in the customer-facing UI) with
+   a simple password login form, then a list of menu items with an editable price field
+   and an available/sold-out toggle per item, and a Save button per row.
+5. This must NOT touch the Android/Capacitor project at all — no APK rebuild needed for
+   this feature.
+Update memory.md with the deployed web URL and confirmation the APK was untouched.
 ```
 
 ---
 
-### Phase 2.x (optional, only if client wants it) — Lightweight Admin
-Only start this after Phases 0–6 are stable and the client has confirmed they want to self-edit the menu. Don't build it speculatively.
+### Phase 2.x — superseded by Phase 7 above (kept here for history only)
+

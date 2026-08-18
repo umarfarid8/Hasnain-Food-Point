@@ -17,7 +17,7 @@ These are standing instructions for whoever (or whatever agent) is building this
 - Keep the release keystore file and its password somewhere safe and backed up — losing it means the app can never be updated in place, only reinstalled fresh.
 
 ## Never Do
-- Don't add authentication, user accounts, cart, or payment — explicitly out of scope (see PRD.md §6).
+- Don't add authentication, user accounts, cart, or payment — explicitly out of scope (see PRD.md §6). **Exception:** Phase 7's single-password admin gate (owner-only, no user table, no registration) is a deliberate, scoped exception — don't expand it into a full auth system.
 - Don't introduce a global state library (Redux, Zustand, etc.) — this app doesn't need one.
 - Don't over-engineer the backend with Clean Architecture layers, CQRS, repositories-on-repositories — a Controller + EF Core is enough for 2 endpoints.
 - Don't block the main thread with a heavy 3D scene on page load — always lazy-load and provide a fallback.

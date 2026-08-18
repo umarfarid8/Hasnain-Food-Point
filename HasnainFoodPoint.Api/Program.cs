@@ -1,5 +1,9 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using HasnainFoodPoint.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +20,36 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Configure JWT Authentication
+var jwtSecret = builder.Configuration["AdminSettings:JwtSecret"] 
+    ?? "HasnainFoodPoint_Default_Super_Secret_Admin_Key_2026_Min32Bytes";
+var jwtIssuer = builder.Configuration["AdminSettings:JwtIssuer"] ?? "HasnainFoodPointApi";
+var jwtAudience = builder.Configuration["AdminSettings:JwtAudience"] ?? "HasnainFoodPointAdmin";
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ValidateIssuer = true,
+        ValidIssuer = jwtIssuer,
+        ValidateAudience = true,
+        ValidAudience = jwtAudience,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(1)
+    };
+});
+
+builder.Services.AddAuthorization();
+
 var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
 builder.Services.AddCors(options =>
@@ -31,6 +65,9 @@ builder.Services.AddCors(options =>
                        origin.StartsWith("capacitor://") ||
                        origin.StartsWith("http://localhost") ||
                        origin.StartsWith("https://localhost") ||
+                       origin.EndsWith(".vercel.app") ||
+                       origin.EndsWith(".netlify.app") ||
+                       origin.EndsWith(".surge.sh") ||
                        configuredOrigins.Any(co => string.Equals(co.TrimEnd('/'), origin.TrimEnd('/'), StringComparison.OrdinalIgnoreCase));
             })
             .AllowAnyHeader()
@@ -40,7 +77,40 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Hasnain Food Point API",
+        Version = "v1",
+        Description = "API for Hasnain Food Point menu, settings, and admin management"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter JWT Bearer token obtained from POST /api/admin/login"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -77,6 +147,7 @@ if (!app.Environment.IsProduction() || Environment.GetEnvironmentVariable("DISAB
 
 app.UseCors("AllowFrontend");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Root & Health check endpoints
@@ -85,7 +156,7 @@ app.MapGet("/", () => Results.Ok(new
     name = "Hasnain Food Point API",
     status = "Online",
     version = "1.0",
-    endpoints = new[] { "/api/menu", "/api/settings", "/health" }
+    endpoints = new[] { "/api/menu", "/api/settings", "/api/admin/login", "/health" }
 }));
 
 app.MapGet("/health", () => Results.Ok(new
@@ -97,5 +168,3 @@ app.MapGet("/health", () => Results.Ok(new
 app.MapControllers();
 
 app.Run();
-
-
