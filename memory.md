@@ -2,10 +2,10 @@
 
 Living status file. The agent (and you) should update this **at the end of every session/task** — that's how a fresh Antigravity session picks up context cheaply instead of re-reading the whole codebase.
 
-Last updated: 2026-08-18 (Backend CORS Configured for https://hasnainfoodpoint.netlify.app)
+Last updated: 2026-08-21 (Backend Prepared & Verified for Render Deployment with SQLite & Netlify CORS)
 
 ## Current Phase
-`Phase 7 Complete — Backend CORS Configured & Web Deployment Ready`
+`Phase 7 Complete — Backend Deployment to Render Prepared & Verified (SQLite + Docker + Netlify CORS)`
 
 ## Completed
 - [x] Phase 0 — Project Setup (incl. Capacitor Android shell)
@@ -23,39 +23,39 @@ Last updated: 2026-08-18 (Backend CORS Configured for https://hasnainfoodpoint.n
   - SPA routing configs (`vercel.json`, `netlify.toml`, `public/_redirects`).
   - Added `public/robots.txt` disallowing `/admin` indexing.
   - Switched database provider to SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) for zero-cost, zero-setup production hosting on Render free tier.
-  - Updated `Dockerfile` and `render.yaml` Blueprint for 1-click Dockerized Render deployment.
-  - Wired frontend API base URL (`VITE_API_URL`) to `https://hasnain-food-point-api.onrender.com/api`.
+  - Multi-stage .NET 8 `Dockerfile` created with non-root security and `/app/data` permission setup.
+  - Configured `render.yaml` Blueprint for 1-click Dockerized Render deployment with health check at `/health`.
   - Configured backend CORS policy to explicitly allow `https://hasnainfoodpoint.netlify.app` across `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
+  - Verified live CORS preflight (`OPTIONS`) and `GET` response with `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app`.
   - Verified that Android/Capacitor project was 100% untouched.
 
 ## File Currently Being Worked On
-Completed Backend CORS Policy Configuration for Netlify Web Deployment:
-1. **CORS Policy Update**:
-   - Explicitly added `https://hasnainfoodpoint.netlify.app` and `hasnainfoodpoint.netlify.app` host matching in `HasnainFoodPoint.Api/Program.cs`.
-   - Added `https://hasnainfoodpoint.netlify.app` to `appsettings.Production.json` and `appsettings.json`.
-   - Updated `render.yaml` environment variable `Cors__AllowedOrigins` with `https://hasnainfoodpoint.netlify.app`.
-2. **CORS Verification**:
-   - Validated via HTTP preflight (`OPTIONS`) and `GET` requests against the running API with `Origin: https://hasnainfoodpoint.netlify.app`.
-   - Response returned `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app` and `Access-Control-Allow-Methods: GET`.
-3. **Android / Capacitor Project Integrity**:
-   - Confirmed `hasnain-food-point-web/android/` was **100% untouched**.
+Backend Deployment Preparation & Verification for Render & Netlify Web Frontend:
+1. **Frontend Environment Variable for Netlify**:
+   - Variable Name: `VITE_API_URL`
+   - Production Value: `https://hasnain-food-point-api.onrender.com/api`
+   - Verified in `hasnain-food-point-web/src/lib/api.js`, `.env.example`, and `.env.production`.
+   - Fallback in `src/lib/api.js`: `'https://hasnain-food-point-api.onrender.com/api'`.
+2. **Database Provider (SQLite for Production)**:
+   - Configured `HasnainFoodPoint.Api/Program.cs` to default to SQLite provider with automatic table generation and data seeding (`SeedData.InitializeAsync`).
+   - Configured `appsettings.Production.json` and `appsettings.json` with `DatabaseProvider: Sqlite` and `ConnectionStrings:DefaultConnection: "Data Source=hasnain_food_point.db"`.
+   - Tested EF Core startup on SQLite: verified automated schema initialization and initial seed data creation without external database dependencies.
+3. **Docker & Render Configuration**:
+   - `HasnainFoodPoint.Api/Dockerfile`: Multi-stage .NET 8 SDK build and ASP.NET 8 runtime image, listening on `http://+:8080`.
+   - `render.yaml`: Web service blueprint with `runtime: docker`, `dockerfilePath: ./HasnainFoodPoint.Api/Dockerfile`, `dockerContext: ./HasnainFoodPoint.Api`, `healthCheckPath: /health`, and pre-populated production environment variables.
+4. **CORS Whitelist Verification**:
+   - Explicitly configured and verified `https://hasnainfoodpoint.netlify.app` in `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
+   - Live HTTP preflight (`OPTIONS` and `GET`) tests confirmed `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app`, `Access-Control-Allow-Methods: GET, PUT`, and `Access-Control-Allow-Headers: Content-Type, Authorization`.
+5. **Render Deployment Steps**:
+   - **Option A (Blueprint)**: Connect repo in Render Dashboard -> New -> Blueprint -> Select repository (reads `render.yaml` automatically).
+   - **Option B (Manual Web Service)**: New Web Service -> Docker runtime -> Root directory: `HasnainFoodPoint.Api` -> Dockerfile path: `Dockerfile` -> Port: `8080` -> Health check: `/health`.
 
 ## Decisions Log
-- `2026-08-18` — Configured Backend CORS for Netlify Production Domain:
-  1. Whitelisted `https://hasnainfoodpoint.netlify.app` in `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
-  2. Ensures all API requests from Netlify (`/api/menu`, `/api/settings`, `/api/admin/login`, `/api/admin/menu-items`) execute without browser CORS blocks.
-
-- `2026-08-18` — Wired Frontend to Deployed Render Backend URL:
-  1. Configured `VITE_API_URL` to `https://hasnain-food-point-api.onrender.com/api` in `.env`, `.env.production`, and fallback in `src/lib/api.js`.
-  2. Ensures both web build (Vercel/Netlify) and APK communicate with the cloud-hosted backend.
-
-- `2026-08-18` — SQLite Migration & Render Free-Tier Blueprint:
-  1. **SQLite Provider Selection**:
-     - Switched production and local database to SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) to enable 100% free hosting on Render with no external managed SQL Server required.
-     - Auto-seeds business info and initial menu seamlessly upon container startup.
-  2. **Render Blueprint (`render.yaml`)**:
-     - Pre-configured environment variables for Docker web service on port 8080.
-     - Health check configured at `/health`.
+- `2026-08-21` — Netlify Frontend Environment Variable & Render Deployment Readiness:
+  1. **Frontend API URL Variable**: Identified and documented `VITE_API_URL` as the exact environment variable name required for Netlify builds (set to `https://hasnain-food-point-api.onrender.com/api`).
+  2. **SQLite Database Provider**: Configured production backend to run EF Core SQLite out-of-the-box (`hasnain_food_point.db`), allowing zero-cost Render deployment without needing an external SQL Server instance.
+  3. **Dockerfile & Blueprint**: Maintained production `Dockerfile` (multi-stage .NET 8) and `render.yaml` with Oregon region, free tier plan, health check at `/health`, and necessary ASP.NET Core environment variables (`ASPNETCORE_URLS=http://+:8080`, `DISABLE_HTTPS_REDIRECT=true`).
+  4. **CORS Policy for Netlify**: Confirmed `https://hasnainfoodpoint.netlify.app` is whitelisted across all configuration levels and validated with live HTTP requests.
 
 - `2026-08-18` — Completed Phase 7: Web Deploy & Admin Panel:
   1. **Single-Password Admin Auth Architecture**:
