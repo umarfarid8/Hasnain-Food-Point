@@ -9,6 +9,11 @@ obj/
 *.db
 *.db-wal
 *.db-shm
+appsettings.Production.json
+appsettings.*.local.json
+appsettings.local.json
+*.PublishSettings
+publish/
 
 
 # Node / Frontend

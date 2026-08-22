@@ -2,10 +2,10 @@
 
 Living status file. The agent (and you) should update this **at the end of every session/task** — that's how a fresh Antigravity session picks up context cheaply instead of re-reading the whole codebase.
 
-Last updated: 2026-08-22 (Fixed CORS Preflight OPTIONS 404 & Middleware Pipeline Ordering)
+Last updated: 2026-08-22 (Secrets Audit Completed, appsettings.Production.json Gitignored & Untracked)
 
 ## Current Phase
-`Phase 7 Complete — CORS Preflight Pipeline Fixed (204 No Content Verified) & Render Ready`
+`Phase 7 Complete — Secrets Audit Passed, Config Gitignored & MonsterASP.NET Ready`
 
 ## Completed
 - [x] Phase 0 — Project Setup (incl. Capacitor Android shell)
@@ -16,41 +16,52 @@ Last updated: 2026-08-22 (Fixed CORS Preflight OPTIONS 404 & Middleware Pipeline
 - [x] Phase 5 — Low-Literacy & Performance Pass
 - [x] Phase 6 — Deploy Backend & Build Signed APK
 - [x] Android Bug Fixes & App Label: Handled native app intent handoff with `@capacitor/browser`, programmatic smooth scroll in WebView, and updated Android app name to `HFP`.
-- [x] Phase 7 — Web Deploy, Admin Panel, SQLite Migration & CORS Configuration:
+- [x] Phase 7 — Web Deploy, Admin Panel, SQL Server (MonsterASP.NET) & CORS Configuration:
   - Single-password admin authentication (JWT).
   - Price and availability update API (`PUT /api/admin/menu-items/{id}`).
   - Unlinked `/admin` portal on frontend.
   - SPA routing configs (`vercel.json`, `netlify.toml`, `public/_redirects`).
   - Added `public/robots.txt` disallowing `/admin` indexing.
-  - Switched database provider to SQLite (`Microsoft.EntityFrameworkCore.Sqlite`) for zero-cost, zero-setup production hosting on Render free tier.
-  - Multi-stage .NET 8 `Dockerfile` created with non-root security and `/app/data` permission setup.
-  - Configured `render.yaml` Blueprint for 1-click Dockerized Render deployment with health check at `/health`.
-  - Configured backend CORS policy to explicitly allow `https://hasnainfoodpoint.netlify.app` across `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
-  - Fixed CORS middleware pipeline ordering (`app.UseRouting()` before `app.UseCors()` before `app.UseAuthorization()`).
+  - Database Provider: Configured for **SQL Server** (`Microsoft.EntityFrameworkCore.SqlServer` with `EnableRetryOnFailure`) targeting MonsterASP.NET MSSQL instance.
+  - Security & Secrets Audit:
+    - Untracked `HasnainFoodPoint.Api/appsettings.Production.json` (`git rm --cached`) while preserving local file on disk.
+    - Added `appsettings.Production.json`, `appsettings.*.local.json`, and `*.PublishSettings` to root `.gitignore`.
+    - Added `HasnainFoodPoint.Api/appsettings.Production.json.example` template with generic placeholders.
+    - Generated a cryptographically random 64-character (256-bit CSPRNG) JWT secret in local `appsettings.Production.json` replacing readable development placeholders.
+    - Sanitized `hasnain-food-point-web/android/keystore.properties.example` with generic placeholder values.
+    - Audited full git commit history (`git log -p --all`): verified **zero** real passwords, connection strings, or cloud secrets exist in git history.
+  - Multi-stage .NET 8 `Dockerfile` created with non-root security and environment variable support.
+  - Configured backend CORS policy to explicitly allow `https://hasnainfoodpoint.netlify.app` across `Program.cs`, `appsettings.json`, and `render.yaml`.
+  - Fixed CORS middleware pipeline ordering: `app.UseRouting()` -> `app.UseCors("AllowFrontend")` -> `app.UseAuthentication()` -> `app.UseAuthorization()` -> `app.MapControllers()`.
   - Added explicit `[HttpOptions]` and `[EnableCors]` attributes to `AdminController`, `MenuController`, and `SettingsController`.
   - Verified live CORS preflight (`OPTIONS /api/admin/login`, `OPTIONS /api/admin/menu-items`) returns `204 No Content` with `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app`.
   - Verified that Android/Capacitor project was 100% untouched.
 
 ## File Currently Being Worked On
-Fixed CORS Preflight OPTIONS 404 Issue for Netlify Admin Access:
-1. **Root Cause Diagnosis**:
-   - In `HasnainFoodPoint.Api/Program.cs`, `app.UseRouting()` was omitted prior to `app.UseCors("AllowFrontend")`. In ASP.NET Core Endpoint Routing, CORS middleware must execute between `UseRouting` and `UseAuthentication`/`UseAuthorization`/`MapControllers` to evaluate endpoint metadata and short-circuit preflight requests before authorization challenges or controller routing.
-   - Without `UseRouting()`, `OPTIONS /api/admin/login` fell through to controller routing which only accepted `POST`, triggering 404.
-2. **Pipeline Reordering & Enhancements**:
-   - Added explicit `app.UseRouting()` immediately preceding `app.UseCors("AllowFrontend")`.
-   - Placed `app.UseCors("AllowFrontend")` before `app.UseAuthentication()` and `app.UseAuthorization()`.
-   - Updated CORS policy to explicitly allow methods (`GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH`) and headers (`Authorization, Content-Type, Accept, Origin, X-Requested-With`).
-   - Added `[EnableCors("AllowFrontend")]` attribute to `AdminController`, `MenuController`, and `SettingsController`.
-   - Added explicit `[AllowAnonymous] [HttpOptions]` handler endpoints in `AdminController` for `/api/admin/login`, `/api/admin/menu-items`, and `/api/admin/menu-items/{id}` to guarantee 204 No Content even on non-standard/bare OPTIONS requests.
-3. **Verification Results**:
-   - `OPTIONS /api/admin/login` (with `Origin: https://hasnainfoodpoint.netlify.app`, `Access-Control-Request-Method: POST`) -> `204 No Content`
-   - `OPTIONS /api/admin/login` (bare OPTIONS) -> `204 No Content`
-   - `OPTIONS /api/admin/menu-items` (with `Access-Control-Request-Method: GET`, `Authorization` header) -> `204 No Content`
-   - `OPTIONS /api/admin/menu-items/1` (with `Access-Control-Request-Method: PUT`) -> `204 No Content`
-   - `POST /api/admin/login` -> returns `401 Unauthorized` with `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app` on invalid password, and `200 OK` + JWT token on valid password.
+Security & Config Audit + Git Tracking Cleanup:
+1. **Config Untracking & Gitignore**:
+   - Removed `HasnainFoodPoint.Api/appsettings.Production.json` from git tracking (`git rm --cached`) without touching the local file on disk.
+   - Added `appsettings.Production.json`, `appsettings.*.local.json`, `appsettings.local.json`, `*.PublishSettings`, and `publish/` to root `.gitignore`.
+   - Created `HasnainFoodPoint.Api/appsettings.Production.json.example` for reference.
+2. **Production JWT Secret Hardening**:
+   - Replaced readable development placeholder in local `appsettings.Production.json` with a newly generated, high-entropy 64-character (256-bit) cryptographically random hex key from CSPRNG.
+3. **Secrets Audit (Current Repo & Full Git History)**:
+   - Audited current working directory and all historical commits with regex searches (`Password`, `JwtSecret`, `DefaultConnection`, `Server=`, `User Id=`, `storePassword`).
+   - Verified that `keystore.properties` is strictly ignored and untracked.
+   - Sanitized `keystore.properties.example` to remove template password literals.
+   - Confirmed that only SHA-256 one-way hashes (`PasswordHash`), dummy dev keys, or generic placeholder connection strings (`YOUR_MONSTERASP_SERVER`) exist in the repository and git history.
+4. **MonsterASP.NET & SQL Server Configuration**:
+   - Provider: `Microsoft.EntityFrameworkCore.SqlServer` configured with `EnableRetryOnFailure`.
+   - Production connection string can be safely injected via environment variables or local `appsettings.Production.json`.
 
 ## Decisions Log
-- `2026-08-22` — Fixed CORS Preflight Middleware Ordering & Added Explicit Options Handlers:
+- `2026-08-22` — Security Audit, Gitignore Hardening & appsettings.Production.json Untracked:
+  1. **Untracked Production Appsettings & Hardened JWT Secret**: Executed `git rm --cached` on `appsettings.Production.json`, added it to `.gitignore`, and populated it locally with a newly generated 64-character cryptographically random JWT secret (keeping secrets out of version control).
+  2. **Audit Passed**: Confirmed no real passwords, live SQL Server connection strings, or JWT private keys are present anywhere in the repo or git log.
+  3. **Sanitized Templates**: Replaced template values in `keystore.properties.example` with standard placeholders.
+  1. **SQL Server DB Provider**: Configured `Program.cs` and configuration files to use `Microsoft.EntityFrameworkCore.SqlServer` with connection retry resiliency (`EnableRetryOnFailure`), connecting to MonsterASP.NET's MSSQL instance.
+  2. **Pipeline Ordering Verified**: Confirmed strict middleware order `UseRouting() -> UseCors() -> UseAuthentication() -> UseAuthorization() -> MapControllers()`.
+  3. **CORS Policy for Netlify**: Confirmed `https://hasnainfoodpoint.netlify.app` is allowed for all endpoints with full method and header support.
   1. **Middleware Pipeline**: Configured strict ASP.NET Core middleware ordering `UseRouting() -> UseCors("AllowFrontend") -> UseAuthentication() -> UseAuthorization() -> MapControllers()`.
   2. **Controller Hardening**: Added `[EnableCors]` attributes and `[HttpOptions]` methods in `AdminController` to eliminate preflight 404 errors completely.
 

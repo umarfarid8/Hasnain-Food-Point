@@ -7,9 +7,9 @@
     }
   },
   "AllowedHosts": "*",
-  "DatabaseProvider": "Sqlite",
+  "DatabaseProvider": "SqlServer",
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=hasnain_food_point.db"
+    "DefaultConnection": "Server=YOUR_MONSTERASP_SERVER;Database=YOUR_DATABASE;User Id=YOUR_USER;Password=YOUR_PASSWORD;TrustServerCertificate=True;MultipleActiveResultSets=True;"
   },
   "Cors": {
     "AllowedOrigins": [
@@ -21,8 +21,8 @@
     ]
   },
   "AdminSettings": {
-    "PasswordHash": "3dc5f68b0d5c049d85aac0d31e75333b47ce14cc6532967b44e428d09fc2003d",
-    "JwtSecret": "HasnainFoodPoint_SuperSecret_AdminKey_2026_Min32CharsLong!",
+    "PasswordHash": "YOUR_SHA256_PASSWORD_HASH",
+    "JwtSecret": "YOUR_SUPER_SECRET_JWT_KEY_MIN_32_BYTES_LONG",
     "JwtIssuer": "HasnainFoodPointApi",
     "JwtAudience": "HasnainFoodPointAdmin",
     "TokenExpiryMinutes": 120

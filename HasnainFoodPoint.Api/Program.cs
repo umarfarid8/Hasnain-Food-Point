@@ -18,15 +18,35 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var dbProvider = builder.Configuration["DatabaseProvider"] ?? "Sqlite";
+var dbProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    if (dbProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase) && 
-        !string.IsNullOrEmpty(connectionString) && 
-        !connectionString.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+    if (dbProvider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase) ||
+        (!string.IsNullOrEmpty(connectionString) && !connectionString.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase)))
     {
-        options.UseSqlServer(connectionString);
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            options.UseSqlServer(connectionString, sqlServerOptions =>
+            {
+                sqlServerOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
+            });
+        }
+        else
+        {
+            var fallbackConn = builder.Configuration.GetConnectionString("SqlServerConnection")
+                ?? "Server=(localdb)\\mssqllocaldb;Database=HasnainFoodPointDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+            options.UseSqlServer(fallbackConn, sqlServerOptions =>
+            {
+                sqlServerOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: null);
+            });
+        }
     }
     else
     {

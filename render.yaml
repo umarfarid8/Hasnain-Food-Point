@@ -15,8 +15,8 @@ services:
       - key: DISABLE_HTTPS_REDIRECT
         value: "true"
       - key: DatabaseProvider
-        value: Sqlite
+        value: SqlServer
       - key: ConnectionStrings__DefaultConnection
-        value: Data Source=hasnain_food_point.db
+        value: Server=YOUR_MONSTERASP_SERVER;Database=YOUR_DATABASE;User Id=YOUR_USER;Password=YOUR_PASSWORD;TrustServerCertificate=True;MultipleActiveResultSets=True;
       - key: Cors__AllowedOrigins
         value: "https://hasnainfoodpoint.netlify.app,http://localhost:5173,https://localhost,capacitor://localhost,http://localhost,https://hasnain-food-point.vercel.app,https://hasnain-food-point.netlify.app"
