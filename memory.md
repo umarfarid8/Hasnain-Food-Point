@@ -2,10 +2,10 @@
 
 Living status file. The agent (and you) should update this **at the end of every session/task** — that's how a fresh Antigravity session picks up context cheaply instead of re-reading the whole codebase.
 
-Last updated: 2026-08-21 (Backend Prepared & Verified for Render Deployment with SQLite & Netlify CORS)
+Last updated: 2026-08-22 (Fixed CORS Preflight OPTIONS 404 & Middleware Pipeline Ordering)
 
 ## Current Phase
-`Phase 7 Complete — Backend Deployment to Render Prepared & Verified (SQLite + Docker + Netlify CORS)`
+`Phase 7 Complete — CORS Preflight Pipeline Fixed (204 No Content Verified) & Render Ready`
 
 ## Completed
 - [x] Phase 0 — Project Setup (incl. Capacitor Android shell)
@@ -26,31 +26,34 @@ Last updated: 2026-08-21 (Backend Prepared & Verified for Render Deployment with
   - Multi-stage .NET 8 `Dockerfile` created with non-root security and `/app/data` permission setup.
   - Configured `render.yaml` Blueprint for 1-click Dockerized Render deployment with health check at `/health`.
   - Configured backend CORS policy to explicitly allow `https://hasnainfoodpoint.netlify.app` across `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
-  - Verified live CORS preflight (`OPTIONS`) and `GET` response with `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app`.
+  - Fixed CORS middleware pipeline ordering (`app.UseRouting()` before `app.UseCors()` before `app.UseAuthorization()`).
+  - Added explicit `[HttpOptions]` and `[EnableCors]` attributes to `AdminController`, `MenuController`, and `SettingsController`.
+  - Verified live CORS preflight (`OPTIONS /api/admin/login`, `OPTIONS /api/admin/menu-items`) returns `204 No Content` with `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app`.
   - Verified that Android/Capacitor project was 100% untouched.
 
 ## File Currently Being Worked On
-Backend Deployment Preparation & Verification for Render & Netlify Web Frontend:
-1. **Frontend Environment Variable for Netlify**:
-   - Variable Name: `VITE_API_URL`
-   - Production Value: `https://hasnain-food-point-api.onrender.com/api`
-   - Verified in `hasnain-food-point-web/src/lib/api.js`, `.env.example`, and `.env.production`.
-   - Fallback in `src/lib/api.js`: `'https://hasnain-food-point-api.onrender.com/api'`.
-2. **Database Provider (SQLite for Production)**:
-   - Configured `HasnainFoodPoint.Api/Program.cs` to default to SQLite provider with automatic table generation and data seeding (`SeedData.InitializeAsync`).
-   - Configured `appsettings.Production.json` and `appsettings.json` with `DatabaseProvider: Sqlite` and `ConnectionStrings:DefaultConnection: "Data Source=hasnain_food_point.db"`.
-   - Tested EF Core startup on SQLite: verified automated schema initialization and initial seed data creation without external database dependencies.
-3. **Docker & Render Configuration**:
-   - `HasnainFoodPoint.Api/Dockerfile`: Multi-stage .NET 8 SDK build and ASP.NET 8 runtime image, listening on `http://+:8080`.
-   - `render.yaml`: Web service blueprint with `runtime: docker`, `dockerfilePath: ./HasnainFoodPoint.Api/Dockerfile`, `dockerContext: ./HasnainFoodPoint.Api`, `healthCheckPath: /health`, and pre-populated production environment variables.
-4. **CORS Whitelist Verification**:
-   - Explicitly configured and verified `https://hasnainfoodpoint.netlify.app` in `Program.cs`, `appsettings.json`, `appsettings.Production.json`, and `render.yaml`.
-   - Live HTTP preflight (`OPTIONS` and `GET`) tests confirmed `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app`, `Access-Control-Allow-Methods: GET, PUT`, and `Access-Control-Allow-Headers: Content-Type, Authorization`.
-5. **Render Deployment Steps**:
-   - **Option A (Blueprint)**: Connect repo in Render Dashboard -> New -> Blueprint -> Select repository (reads `render.yaml` automatically).
-   - **Option B (Manual Web Service)**: New Web Service -> Docker runtime -> Root directory: `HasnainFoodPoint.Api` -> Dockerfile path: `Dockerfile` -> Port: `8080` -> Health check: `/health`.
+Fixed CORS Preflight OPTIONS 404 Issue for Netlify Admin Access:
+1. **Root Cause Diagnosis**:
+   - In `HasnainFoodPoint.Api/Program.cs`, `app.UseRouting()` was omitted prior to `app.UseCors("AllowFrontend")`. In ASP.NET Core Endpoint Routing, CORS middleware must execute between `UseRouting` and `UseAuthentication`/`UseAuthorization`/`MapControllers` to evaluate endpoint metadata and short-circuit preflight requests before authorization challenges or controller routing.
+   - Without `UseRouting()`, `OPTIONS /api/admin/login` fell through to controller routing which only accepted `POST`, triggering 404.
+2. **Pipeline Reordering & Enhancements**:
+   - Added explicit `app.UseRouting()` immediately preceding `app.UseCors("AllowFrontend")`.
+   - Placed `app.UseCors("AllowFrontend")` before `app.UseAuthentication()` and `app.UseAuthorization()`.
+   - Updated CORS policy to explicitly allow methods (`GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH`) and headers (`Authorization, Content-Type, Accept, Origin, X-Requested-With`).
+   - Added `[EnableCors("AllowFrontend")]` attribute to `AdminController`, `MenuController`, and `SettingsController`.
+   - Added explicit `[AllowAnonymous] [HttpOptions]` handler endpoints in `AdminController` for `/api/admin/login`, `/api/admin/menu-items`, and `/api/admin/menu-items/{id}` to guarantee 204 No Content even on non-standard/bare OPTIONS requests.
+3. **Verification Results**:
+   - `OPTIONS /api/admin/login` (with `Origin: https://hasnainfoodpoint.netlify.app`, `Access-Control-Request-Method: POST`) -> `204 No Content`
+   - `OPTIONS /api/admin/login` (bare OPTIONS) -> `204 No Content`
+   - `OPTIONS /api/admin/menu-items` (with `Access-Control-Request-Method: GET`, `Authorization` header) -> `204 No Content`
+   - `OPTIONS /api/admin/menu-items/1` (with `Access-Control-Request-Method: PUT`) -> `204 No Content`
+   - `POST /api/admin/login` -> returns `401 Unauthorized` with `Access-Control-Allow-Origin: https://hasnainfoodpoint.netlify.app` on invalid password, and `200 OK` + JWT token on valid password.
 
 ## Decisions Log
+- `2026-08-22` — Fixed CORS Preflight Middleware Ordering & Added Explicit Options Handlers:
+  1. **Middleware Pipeline**: Configured strict ASP.NET Core middleware ordering `UseRouting() -> UseCors("AllowFrontend") -> UseAuthentication() -> UseAuthorization() -> MapControllers()`.
+  2. **Controller Hardening**: Added `[EnableCors]` attributes and `[HttpOptions]` methods in `AdminController` to eliminate preflight 404 errors completely.
+
 - `2026-08-21` — Netlify Frontend Environment Variable & Render Deployment Readiness:
   1. **Frontend API URL Variable**: Identified and documented `VITE_API_URL` as the exact environment variable name required for Netlify builds (set to `https://hasnain-food-point-api.onrender.com/api`).
   2. **SQLite Database Provider**: Configured production backend to run EF Core SQLite out-of-the-box (`hasnain_food_point.db`), allowing zero-cost Render deployment without needing an external SQL Server instance.

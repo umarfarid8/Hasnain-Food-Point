@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HasnainFoodPoint.Api.Data;
@@ -7,6 +8,7 @@ namespace HasnainFoodPoint.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableCors("AllowFrontend")]
 public class SettingsController : ControllerBase
 {
     private readonly AppDbContext _context;

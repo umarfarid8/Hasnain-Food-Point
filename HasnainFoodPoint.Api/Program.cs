@@ -101,6 +101,8 @@ builder.Services.AddCors(options =>
                     return configuredOrigins.Any(co => string.Equals(co, cleanOrigin, StringComparison.OrdinalIgnoreCase));
                 }
             })
+            .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
+            .WithHeaders("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -175,6 +177,9 @@ if (!app.Environment.IsProduction() || Environment.GetEnvironmentVariable("DISAB
 {
     app.UseHttpsRedirection();
 }
+
+// Middleware Order: UseRouting -> UseCors -> UseAuthentication -> UseAuthorization -> Endpoints
+app.UseRouting();
 
 app.UseCors("AllowFrontend");
 

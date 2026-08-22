@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HasnainFoodPoint.Api.Data;
@@ -9,6 +10,7 @@ namespace HasnainFoodPoint.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableCors("AllowFrontend")]
 public class AdminController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -20,6 +22,15 @@ public class AdminController : ControllerBase
         _context = context;
         _configuration = configuration;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Explicit preflight OPTIONS handler for login endpoint.
+    /// </summary>
+    [HttpOptions("login")]
+    public IActionResult OptionsLogin()
+    {
+        return NoContent();
     }
 
     /// <summary>
@@ -52,6 +63,16 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Explicit preflight OPTIONS handler for menu-items endpoint.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpOptions("menu-items")]
+    public IActionResult OptionsMenuItems()
+    {
+        return NoContent();
+    }
+
+    /// <summary>
     /// Retrieves all menu items (including unavailable items) for admin management.
     /// </summary>
     [Authorize]
@@ -79,6 +100,16 @@ public class AdminController : ControllerBase
             .ToListAsync();
 
         return Ok(items);
+    }
+
+    /// <summary>
+    /// Explicit preflight OPTIONS handler for menu-items/{id} endpoint.
+    /// </summary>
+    [AllowAnonymous]
+    [HttpOptions("menu-items/{id}")]
+    public IActionResult OptionsMenuItem(int id)
+    {
+        return NoContent();
     }
 
     /// <summary>
