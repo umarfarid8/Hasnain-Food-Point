@@ -79,27 +79,35 @@ public class AdminController : ControllerBase
     [HttpGet("menu-items")]
     public async Task<ActionResult<IEnumerable<AdminMenuItemDto>>> GetMenuItems()
     {
-        var items = await _context.MenuItems
-            .AsNoTracking()
-            .Include(i => i.Category)
-            .OrderBy(i => i.Category != null ? i.Category.DisplayOrder : 999)
-            .ThenBy(i => i.DisplayOrder)
-            .Select(i => new AdminMenuItemDto
-            {
-                Id = i.Id,
-                CategoryId = i.CategoryId,
-                CategoryName = i.Category != null ? i.Category.Name : "Uncategorized",
-                Name = i.Name,
-                Description = i.Description,
-                Price = i.Price,
-                PriceDisplay = i.PriceDisplay ?? (i.Price > 0 ? $"Rs. {i.Price:0.##}" : "Ask on WhatsApp"),
-                ImageUrl = i.ImageUrl,
-                IsAvailable = i.IsAvailable,
-                DisplayOrder = i.DisplayOrder
-            })
-            .ToListAsync();
+        try
+        {
+            var items = await _context.MenuItems
+                .AsNoTracking()
+                .Include(i => i.Category)
+                .OrderBy(i => i.Category != null ? i.Category.DisplayOrder : 999)
+                .ThenBy(i => i.DisplayOrder)
+                .Select(i => new AdminMenuItemDto
+                {
+                    Id = i.Id,
+                    CategoryId = i.CategoryId,
+                    CategoryName = i.Category != null ? i.Category.Name : "Uncategorized",
+                    Name = i.Name,
+                    Description = i.Description,
+                    Price = i.Price,
+                    PriceDisplay = i.PriceDisplay ?? (i.Price > 0 ? $"Rs. {i.Price:0.##}" : "Ask on WhatsApp"),
+                    ImageUrl = i.ImageUrl,
+                    IsAvailable = i.IsAvailable,
+                    DisplayOrder = i.DisplayOrder
+                })
+                .ToListAsync();
 
-        return Ok(items);
+            return Ok(items);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve admin menu items from database.");
+            return StatusCode(500, new { message = "Database error while fetching menu items. Please ensure database connection is configured." });
+        }
     }
 
     /// <summary>
@@ -124,42 +132,50 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = "Update data is required." });
         }
 
-        var item = await _context.MenuItems
-            .Include(i => i.Category)
-            .FirstOrDefaultAsync(i => i.Id == id);
-
-        if (item == null)
+        try
         {
-            return NotFound(new { message = $"Menu item with ID {id} not found." });
+            var item = await _context.MenuItems
+                .Include(i => i.Category)
+                .FirstOrDefaultAsync(i => i.Id == id);
+
+            if (item == null)
+            {
+                return NotFound(new { message = $"Menu item with ID {id} not found." });
+            }
+
+            item.Price = request.Price;
+            item.IsAvailable = request.IsAvailable;
+            if (request.Price > 0)
+            {
+                item.PriceDisplay = $"Rs. {request.Price:0.##}";
+            }
+            else if (item.PriceDisplay != "Ask on WhatsApp")
+            {
+                item.PriceDisplay = "Ask on WhatsApp";
+            }
+
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Menu item {Id} ({Name}) updated: Price={Price}, Available={Available}", 
+                item.Id, item.Name, item.Price, item.IsAvailable);
+
+            return Ok(new AdminMenuItemDto
+            {
+                Id = item.Id,
+                CategoryId = item.CategoryId,
+                CategoryName = item.Category != null ? item.Category.Name : "Uncategorized",
+                Name = item.Name,
+                Description = item.Description,
+                Price = item.Price,
+                PriceDisplay = item.PriceDisplay,
+                ImageUrl = item.ImageUrl,
+                IsAvailable = item.IsAvailable,
+                DisplayOrder = item.DisplayOrder
+            });
         }
-
-        item.Price = request.Price;
-        item.IsAvailable = request.IsAvailable;
-        if (request.Price > 0)
+        catch (Exception ex)
         {
-            item.PriceDisplay = $"Rs. {request.Price:0.##}";
+            _logger.LogError(ex, "Failed to update menu item {Id} in database.", id);
+            return StatusCode(500, new { message = "Database error while updating menu item. Please ensure database connection is configured." });
         }
-        else if (item.PriceDisplay != "Ask on WhatsApp")
-        {
-            item.PriceDisplay = "Ask on WhatsApp";
-        }
-
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Menu item {Id} ({Name}) updated: Price={Price}, Available={Available}", 
-            item.Id, item.Name, item.Price, item.IsAvailable);
-
-        return Ok(new AdminMenuItemDto
-        {
-            Id = item.Id,
-            CategoryId = item.CategoryId,
-            CategoryName = item.Category != null ? item.Category.Name : "Uncategorized",
-            Name = item.Name,
-            Description = item.Description,
-            Price = item.Price,
-            PriceDisplay = item.PriceDisplay,
-            ImageUrl = item.ImageUrl,
-            IsAvailable = item.IsAvailable,
-            DisplayOrder = item.DisplayOrder
-        });
     }
 }
