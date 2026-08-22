@@ -185,12 +185,13 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Enable Swagger in development and production for easy API testing
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Hasnain Food Point API v1");
+    options.RoutePrefix = "swagger";
+});
 
 // Only redirect HTTPS when not behind a container proxy that already handles SSL
 if (!app.Environment.IsProduction() || Environment.GetEnvironmentVariable("DISABLE_HTTPS_REDIRECT") != "true")
@@ -212,7 +213,8 @@ app.MapGet("/", () => Results.Ok(new
     name = "Hasnain Food Point API",
     status = "Online",
     version = "1.0",
-    endpoints = new[] { "/api/menu", "/api/settings", "/api/admin/login", "/health" }
+    swagger = "/swagger",
+    endpoints = new[] { "/swagger", "/api/menu", "/api/settings", "/api/admin/login", "/health" }
 }));
 
 app.MapGet("/health", () => Results.Ok(new
