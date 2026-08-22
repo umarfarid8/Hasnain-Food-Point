@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://hasnain-food-point-api.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://hasnainfoodpoint.runasp.net/api';
 
 async function fetchJson(endpoint, options = {}) {
   const controller = new AbortController();

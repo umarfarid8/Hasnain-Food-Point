@@ -42,18 +42,18 @@ Live Deployment URLs & Endpoints:
 1. **Live URLs**:
    - **Frontend Main Website**: `https://hasnainfoodpoint.netlify.app`
    - **Admin Portal**: `https://hasnainfoodpoint.netlify.app/admin`
-   - **Backend API Base**: `https://hasnain-food-point-api.onrender.com` (or your MonsterASP domain)
-   - **Live Swagger UI**: `https://hasnain-food-point-api.onrender.com/swagger` (or `https://your-site-name.monsterasp.net/swagger`)
-   - **Health Check**: `https://hasnain-food-point-api.onrender.com/health`
-2. **Config Untracking & Gitignore**:
+   - **Backend API Base**: `https://hasnainfoodpoint.runasp.net` (MonsterASP.NET live HTTPS)
+   - **Live Swagger UI**: `https://hasnainfoodpoint.runasp.net/swagger`
+   - **Health Check**: `https://hasnainfoodpoint.runasp.net/health`
+2. **Frontend Wiring**:
+   - Updated `API_BASE_URL` in `hasnain-food-point-web/src/lib/api.js` directly to `https://hasnainfoodpoint.runasp.net/api`.
+   - Updated `.env` and `.env.production` with `VITE_API_URL=https://hasnainfoodpoint.runasp.net/api`.
+3. **Config Untracking & Gitignore**:
    - Removed `HasnainFoodPoint.Api/appsettings.Production.json` from git tracking (`git rm --cached`) without touching the local file on disk.
    - Added `appsettings.Production.json`, `appsettings.*.local.json`, `appsettings.local.json`, `*.PublishSettings`, and `publish/` to root `.gitignore`.
    - Created `HasnainFoodPoint.Api/appsettings.Production.json.example` for reference.
-3. **Production JWT Secret Hardening**:
+4. **Production JWT Secret Hardening**:
    - Replaced readable development placeholder in local `appsettings.Production.json` with a newly generated, high-entropy 64-character (256-bit) cryptographically random hex key from CSPRNG.
-4. **Secrets Audit (Current Repo & Full Git History)**:
-   - Audited current working directory and all historical commits with regex searches (`Password`, `JwtSecret`, `DefaultConnection`, `Server=`, `User Id=`, `storePassword`).
-   - Verified that `keystore.properties` is strictly ignored and untracked.
    - Sanitized `keystore.properties.example` to remove template password literals.
    - Confirmed that only SHA-256 one-way hashes (`PasswordHash`), dummy dev keys, or generic placeholder connection strings (`YOUR_MONSTERASP_SERVER`) exist in the repository and git history.
    - Sanitized `keystore.properties.example` to remove template password literals.
